@@ -1,0 +1,195 @@
+[
+  {
+    "url": "https://api.github.com/gists/8582043",
+    "forks_url": "https://api.github.com/gists/8582043/forks",
+    "commits_url": "https://api.github.com/gists/8582043/commits",
+    "id": "8582043",
+    "git_pull_url": "https://gist.github.com/8582043.git",
+    "git_push_url": "https://gist.github.com/8582043.git",
+    "html_url": "https://gist.github.com/8582043",
+    "files": {
+      "0_reuse_code.js": {
+        "filename": "0_reuse_code.js",
+        "type": "application/javascript",
+        "language": "JavaScript",
+        "raw_url": "https://gist.githubusercontent.com/KvanTTT/8582043/raw/2b8a5ccf55d94d29328a24ef3913ffb54841429c/0_reuse_code.js",
+        "size": 126
+      },
+      "1_ruby_quicksort.rb": {
+        "filename": "1_ruby_quicksort.rb",
+        "type": "application/ruby",
+        "language": "Ruby",
+        "raw_url": "https://gist.githubusercontent.com/KvanTTT/8582043/raw/b16d3e65da4810d1bf24fd231028f3775f7dcede/1_ruby_quicksort.rb",
+        "size": 592
+      },
+      "2_keyboard_shortcuts.md": {
+        "filename": "2_keyboard_shortcuts.md",
+        "type": "text/plain",
+        "language": "Markdown",
+        "raw_url": "https://gist.githubusercontent.com/KvanTTT/8582043/raw/df51b18a3a36024d04f9348bd4e24f6991e41a02/2_keyboard_shortcuts.md",
+        "size": 534
+      },
+      "3_cheesecake_recipe.md": {
+        "filename": "3_cheesecake_recipe.md",
+        "type": "text/plain",
+        "language": "Markdown",
+        "raw_url": "https://gist.githubusercontent.com/KvanTTT/8582043/raw/f030315106c2b8dc0f52ad861f67223f88d4e35f/3_cheesecake_recipe.md",
+        "size": 1821
+      }
+    },
+    "public": true,
+    "created_at": "2014-01-23T16:43:27Z",
+    "updated_at": "2014-01-23T16:43:27Z",
+    "description": "Here are some things you can do with Gists in GistBox.",
+    "comments": 0,
+    "user": {
+      "login": "KvanTTT",
+      "id": 1150330,
+      "avatar_url": "https://avatars.githubusercontent.com/u/1150330",
+      "gravatar_id": "0989048848fd64d262b2353c69326605",
+      "url": "https://api.github.com/users/KvanTTT",
+      "html_url": "https://github.com/KvanTTT",
+      "followers_url": "https://api.github.com/users/KvanTTT/followers",
+      "following_url": "https://api.github.com/users/KvanTTT/following{/other_user}",
+      "gists_url": "https://api.github.com/users/KvanTTT/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/KvanTTT/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/KvanTTT/subscriptions",
+      "organizations_url": "https://api.github.com/users/KvanTTT/orgs",
+      "repos_url": "https://api.github.com/users/KvanTTT/repos",
+      "events_url": "https://api.github.com/users/KvanTTT/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/KvanTTT/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "comments_url": "https://api.github.com/gists/8582043/comments"
+  },
+  {
+    "url": "https://api.github.com/gists/3855122",
+    "forks_url": "https://api.github.com/gists/3855122/forks",
+    "commits_url": "https://api.github.com/gists/3855122/commits",
+    "id": "3855122",
+    "git_pull_url": "https://gist.github.com/3855122.git",
+    "git_push_url": "https://gist.github.com/3855122.git",
+    "html_url": "https://gist.github.com/3855122",
+    "files": {
+      "PolygonTriangulator.cs": {
+        "filename": "PolygonTriangulator.cs",
+        "type": "text/plain",
+        "language": "C#",
+        "raw_url": "https://gist.githubusercontent.com/KvanTTT/3855122/raw/f90dc7e832f8edd141d17e0910ad9d67b01b8f74/PolygonTriangulator.cs",
+        "size": 5666
+      }
+    },
+    "public": true,
+    "created_at": "2012-10-08T21:31:34Z",
+    "updated_at": "2012-10-08T21:32:25Z",
+    "description": "Short solution for splitting concave polygon on convex polygons or triangles with other utils (SelfIntersection checking).",
+    "comments": 0,
+    "user": {
+      "login": "KvanTTT",
+      "id": 1150330,
+      "avatar_url": "https://avatars.githubusercontent.com/u/1150330",
+      "gravatar_id": "0989048848fd64d262b2353c69326605",
+      "url": "https://api.github.com/users/KvanTTT",
+      "html_url": "https://github.com/KvanTTT",
+      "followers_url": "https://api.github.com/users/KvanTTT/followers",
+      "following_url": "https://api.github.com/users/KvanTTT/following{/other_user}",
+      "gists_url": "https://api.github.com/users/KvanTTT/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/KvanTTT/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/KvanTTT/subscriptions",
+      "organizations_url": "https://api.github.com/users/KvanTTT/orgs",
+      "repos_url": "https://api.github.com/users/KvanTTT/repos",
+      "events_url": "https://api.github.com/users/KvanTTT/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/KvanTTT/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "comments_url": "https://api.github.com/gists/3855122/comments"
+  },
+  {
+    "url": "https://api.github.com/gists/3849678",
+    "forks_url": "https://api.github.com/gists/3849678/forks",
+    "commits_url": "https://api.github.com/gists/3849678/commits",
+    "id": "3849678",
+    "git_pull_url": "https://gist.github.com/3849678.git",
+    "git_push_url": "https://gist.github.com/3849678.git",
+    "html_url": "https://gist.github.com/3849678",
+    "files": {
+      "PolynominalRegression.cs": {
+        "filename": "PolynominalRegression.cs",
+        "type": "text/plain",
+        "language": "C#",
+        "raw_url": "https://gist.githubusercontent.com/KvanTTT/3849678/raw/481add1c9f211ce9c82c418b7c4c171fce42085e/PolynominalRegression.cs",
+        "size": 2312
+      }
+    },
+    "public": true,
+    "created_at": "2012-10-07T21:35:25Z",
+    "updated_at": "2013-10-31T08:00:12Z",
+    "description": "Implementation of Polynominal regression (http://en.wikipedia.org/wiki/Polynomial_regression) with Math.NET library (http://www.mathdotnet.com/)",
+    "comments": 2,
+    "user": {
+      "login": "KvanTTT",
+      "id": 1150330,
+      "avatar_url": "https://avatars.githubusercontent.com/u/1150330",
+      "gravatar_id": "0989048848fd64d262b2353c69326605",
+      "url": "https://api.github.com/users/KvanTTT",
+      "html_url": "https://github.com/KvanTTT",
+      "followers_url": "https://api.github.com/users/KvanTTT/followers",
+      "following_url": "https://api.github.com/users/KvanTTT/following{/other_user}",
+      "gists_url": "https://api.github.com/users/KvanTTT/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/KvanTTT/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/KvanTTT/subscriptions",
+      "organizations_url": "https://api.github.com/users/KvanTTT/orgs",
+      "repos_url": "https://api.github.com/users/KvanTTT/repos",
+      "events_url": "https://api.github.com/users/KvanTTT/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/KvanTTT/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "comments_url": "https://api.github.com/gists/3849678/comments"
+  },
+  {
+    "url": "https://api.github.com/gists/3765609",
+    "forks_url": "https://api.github.com/gists/3765609/forks",
+    "commits_url": "https://api.github.com/gists/3765609/commits",
+    "id": "3765609",
+    "git_pull_url": "https://gist.github.com/3765609.git",
+    "git_push_url": "https://gist.github.com/3765609.git",
+    "html_url": "https://gist.github.com/3765609",
+    "files": {
+      "gistfile1.cs": {
+        "filename": "gistfile1.cs",
+        "type": "text/plain",
+        "language": "C#",
+        "raw_url": "https://gist.githubusercontent.com/KvanTTT/3765609/raw/2268adc627a42b10bc09d0785eae2f446ef8a248/gistfile1.cs",
+        "size": 1038
+      }
+    },
+    "public": true,
+    "created_at": "2012-09-22T09:04:10Z",
+    "updated_at": "2013-08-14T11:56:12Z",
+    "description": "Rational numbers counting (with inverse)",
+    "comments": 0,
+    "user": {
+      "login": "KvanTTT",
+      "id": 1150330,
+      "avatar_url": "https://avatars.githubusercontent.com/u/1150330",
+      "gravatar_id": "0989048848fd64d262b2353c69326605",
+      "url": "https://api.github.com/users/KvanTTT",
+      "html_url": "https://github.com/KvanTTT",
+      "followers_url": "https://api.github.com/users/KvanTTT/followers",
+      "following_url": "https://api.github.com/users/KvanTTT/following{/other_user}",
+      "gists_url": "https://api.github.com/users/KvanTTT/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/KvanTTT/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/KvanTTT/subscriptions",
+      "organizations_url": "https://api.github.com/users/KvanTTT/orgs",
+      "repos_url": "https://api.github.com/users/KvanTTT/repos",
+      "events_url": "https://api.github.com/users/KvanTTT/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/KvanTTT/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "comments_url": "https://api.github.com/gists/3765609/comments"
+  }
+]
