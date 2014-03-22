@@ -52,10 +52,5 @@ namespace NppGist
 
 			_detectExtensionTimer.Change(200, Timeout.Infinite);
 		}
-
-		private void btnOk_Click(object sender, EventArgs e)
-		{
-
-		}
 	}
 }

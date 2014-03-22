@@ -36,42 +36,44 @@
 			this.label4 = new System.Windows.Forms.Label();
 			this.linkLabel1 = new System.Windows.Forms.LinkLabel();
 			this.linkLabel2 = new System.Windows.Forms.LinkLabel();
+			this.linkSource = new System.Windows.Forms.LinkLabel();
+			this.label5 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.label1.Location = new System.Drawing.Point(25, 25);
+			this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.label1.Location = new System.Drawing.Point(22, 24);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(44, 13);
+			this.label1.Size = new System.Drawing.Size(52, 16);
 			this.label1.TabIndex = 0;
 			this.label1.Text = "Author: ";
 			// 
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.label2.Location = new System.Drawing.Point(25, 53);
+			this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.label2.Location = new System.Drawing.Point(22, 52);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(47, 13);
+			this.label2.Size = new System.Drawing.Size(57, 16);
 			this.label2.TabIndex = 1;
 			this.label2.Text = "Source: ";
 			// 
 			// label3
 			// 
 			this.label3.AutoSize = true;
-			this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.label3.Location = new System.Drawing.Point(25, 80);
+			this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.label3.Location = new System.Drawing.Point(22, 79);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(51, 13);
+			this.label3.Size = new System.Drawing.Size(61, 16);
 			this.label3.TabIndex = 2;
 			this.label3.Text = "Licence: ";
 			// 
 			// btnOk
 			// 
 			this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-			this.btnOk.Location = new System.Drawing.Point(107, 109);
+			this.btnOk.Location = new System.Drawing.Point(156, 109);
 			this.btnOk.Name = "btnOk";
 			this.btnOk.Size = new System.Drawing.Size(75, 23);
 			this.btnOk.TabIndex = 4;
@@ -106,11 +108,35 @@
 			this.linkLabel2.Size = new System.Drawing.Size(0, 16);
 			this.linkLabel2.TabIndex = 7;
 			// 
+			// linkSource
+			// 
+			this.linkSource.AutoSize = true;
+			this.linkSource.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.linkSource.Location = new System.Drawing.Point(89, 51);
+			this.linkSource.Name = "linkSource";
+			this.linkSource.Size = new System.Drawing.Size(260, 16);
+			this.linkSource.TabIndex = 8;
+			this.linkSource.TabStop = true;
+			this.linkSource.Text = "https://github.com/KvanTTT/NppGist";
+			this.linkSource.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkSource_LinkClicked);
+			// 
+			// label5
+			// 
+			this.label5.AutoSize = true;
+			this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+			this.label5.Location = new System.Drawing.Point(89, 79);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(142, 16);
+			this.label5.TabIndex = 9;
+			this.label5.Text = "Apache Version 2.0";
+			// 
 			// frmAbout
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(306, 145);
+			this.ClientSize = new System.Drawing.Size(365, 144);
+			this.Controls.Add(this.label5);
+			this.Controls.Add(this.linkSource);
 			this.Controls.Add(this.linkLabel2);
 			this.Controls.Add(this.linkLabel1);
 			this.Controls.Add(this.label4);
@@ -139,5 +165,7 @@
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.LinkLabel linkLabel1;
 		private System.Windows.Forms.LinkLabel linkLabel2;
+		private System.Windows.Forms.LinkLabel linkSource;
+		private System.Windows.Forms.Label label5;
 	}
 }

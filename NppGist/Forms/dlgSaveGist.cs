@@ -49,6 +49,7 @@ namespace NppGist.Forms
 			else
 			{
 				tvGists.SelectedNode = null;
+				bool nodeFound = false;
 				var shortFileName = Path.GetFileName(currentFileName);
 				foreach (var keyGist in Gists)
 				{
@@ -58,7 +59,7 @@ namespace NppGist.Forms
 						if (shortFileName == "gist-" + gist.Id)
 						{
 							tvGists.SelectedNode = tvGists.Nodes.Find(GuiUtils.GetTreeViewKey(gist, gist.Files.First().Value), true)[0];
-							tvGists.SelectedNode.EnsureVisible();
+							nodeFound = true;
 							break;
 						}
 					}
@@ -68,11 +69,18 @@ namespace NppGist.Forms
 						if (gistFile.Key != null)
 						{
 							tvGists.SelectedNode = tvGists.Nodes.Find(GuiUtils.GetTreeViewKey(gist, gistFile.Value), true)[0];
-							tvGists.SelectedNode.EnsureVisible();
+							nodeFound = true;
 							break;
 						}
 					}
 				}
+				if (!nodeFound)
+				{
+					tvGists.SelectedNode = tvGists.Nodes[0];
+					tbGistName.Text = shortFileName;
+				}
+				tvGists.SelectedNode.EnsureVisible();
+				GuiUtils.UpdateExtenstionResult(cmbLanguage, tbGistName);
 			}
 		}
 
@@ -89,109 +97,102 @@ namespace NppGist.Forms
 				CloseDialog = false;
 				if (tvGists.SelectedNode != null)
 				{
-					//if (Utils.IsFilenameSafe(tbGistName.Text))
+					if (tvGists.SelectedNode.Name == GuiUtils.AllGistsKey)
 					{
-						if (tvGists.SelectedNode.Name == GuiUtils.AllGistsKey)
+						// Creating new gist
+						var createdGist = CreateGist();
+						if (cbCloseDialog.Checked)
+							CloseDialog = true;
+						else
 						{
-							// Creating new gist
-							var createdGist = CreateGist();
-							if (cbCloseDialog.Checked)
-								CloseDialog = true;
-							else
+							GuiUtils.RebuildTreeView(tvGists, Gists, true);
+							SelectFileInGist(createdGist, "");
+						}
+					}
+					else
+					{
+						// Updating existing gist
+						var strs = tvGists.SelectedNode.Name.Split('/');
+						var gist = Gists[strs[0]];
+						var file = gist.Files[strs[1]];
+						var gistName = GuiUtils.GetGistName(gist);
+
+						if (gist.Files.Count == 1)
+						{
+							bool updateGistFile = false;
+							bool createGistFile = false;
+							if (file.Filename == tbGistName.Text)
 							{
-								GuiUtils.RebuildTreeView(tvGists, Gists, true);
-								SelectFileInGist(createdGist, "");
+								if (MessageBox.Show(string.Format("Do you want to update gist \"{0}\"?", gistName),
+									string.Empty, MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+								{
+									updateGistFile = true;
+								}
+							}
+							else
+								createGistFile = true;
+
+							if (updateGistFile || createGistFile)
+							{
+								var updatedGist = UpdateOrCreateFileInGist(gist);
+								if (cbCloseDialog.Checked)
+									CloseDialog = true;
+								else
+								{
+									GuiUtils.RebuildTreeView(tvGists, Gists, true);
+									SelectFileInGist(updatedGist, tbGistName.Text);
+								}
 							}
 						}
 						else
 						{
-							// Updating existing gist
-							var strs = tvGists.SelectedNode.Name.Split('/');
-							var gist = Gists[strs[0]];
-							var file = gist.Files[strs[1]];
-							var gistName = GuiUtils.GetGistName(gist);
-
-							if (gist.Files.Count == 1)
+							// file selected
+							bool updateGistFile = false;
+							bool renameGistFile = false;
+							if (file.Filename == tbGistName.Text)
 							{
-								bool updateGistFile = false;
-								bool createGistFile = false;
-								if (file.Filename == tbGistName.Text)
+								if (MessageBox.Show(string.Format(
+									"Do you want to update file \"{0}\" from gist \"{1}\"?", file.Filename, gistName),
+									string.Empty, MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
 								{
-									if (MessageBox.Show(string.Format("Do you want to update gist \"{0}\"?", gistName),
-										string.Empty, MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-									{
-										updateGistFile = true;
-									}
-								}
-								else
-									createGistFile = true;
-
-								if (updateGistFile || createGistFile)
-								{
-									var updatedGist = UpdateOrCreateFileInGist(gist);
-									if (cbCloseDialog.Checked)
-										CloseDialog = true;
-									else
-									{
-										GuiUtils.RebuildTreeView(tvGists, Gists, true);
-										SelectFileInGist(updatedGist, tbGistName.Text);
-									}
+									updateGistFile = true;
 								}
 							}
 							else
 							{
-								// file selected
-								bool updateGistFile = false;
-								bool renameGistFile = false;
-								if (file.Filename == tbGistName.Text)
+								if (MessageBox.Show(string.Format(
+									"Do you want to update and rename file \"{0}\" to \"{1}\" from gist \"{2}\"?",
+									file.Filename, tbGistName.Text, gistName),
+									string.Empty, MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
 								{
-									if (MessageBox.Show(string.Format(
-										"Do you want to update file \"{0}\" from gist \"{1}\"?", file.Filename, gistName),
-										string.Empty, MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-									{
-										updateGistFile = true;
-									}
+									renameGistFile = true;
 								}
+							}
+
+							if (updateGistFile)
+							{
+								var updatedGist = UpdateOrCreateFileInGist(gist);
+								if (cbCloseDialog.Checked)
+									CloseDialog = true;
 								else
 								{
-									if (MessageBox.Show(string.Format(
-										"Do you want to update and rename file \"{0}\" to \"{1}\" from gist \"{2}\"?",
-										file.Filename, tbGistName.Text, gistName),
-										string.Empty, MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
-									{
-										renameGistFile = true;
-									}
+									GuiUtils.RebuildTreeView(tvGists, Gists, true);
+									SelectFileInGist(updatedGist, tbGistName.Text);
 								}
-
-								if (updateGistFile)
+							}
+							else if (renameGistFile)
+							{
+								var updatedGist = RenameFileInGist(gist, file);
+								if (cbCloseDialog.Checked)
+									CloseDialog = true;
+								else
 								{
-									var updatedGist = UpdateOrCreateFileInGist(gist);
-									if (cbCloseDialog.Checked)
-										CloseDialog = true;
-									else
-									{
-										GuiUtils.RebuildTreeView(tvGists, Gists, true);
-										SelectFileInGist(updatedGist, tbGistName.Text);
-									}
-								}
-								else if (renameGistFile)
-								{
-									var updatedGist = RenameFileInGist(gist, file);
-									if (cbCloseDialog.Checked)
-										CloseDialog = true;
-									else
-									{
-										GuiUtils.RebuildTreeView(tvGists, Gists, true);
-										SelectFileInGist(updatedGist, tbGistName.Text);
-									}
+									GuiUtils.RebuildTreeView(tvGists, Gists, true);
+									SelectFileInGist(updatedGist, tbGistName.Text);
 								}
 							}
 						}
 					}
-					/*else
-					{
-						MessageBox.Show("File name contains invalid characters");
-					}*/
 				}
 				if (sender is TreeView && CloseDialog)
 					Close();
@@ -309,7 +310,6 @@ namespace NppGist.Forms
 					cbPublic.Enabled = true;
 					cbPublic.Checked = true;
 					tbGistName.Text = string.Empty;
-					//cmbLanguage.SelectedItem = Lists.GistLangs[0];
 				}
 				else
 				{

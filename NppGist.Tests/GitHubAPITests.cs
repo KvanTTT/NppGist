@@ -16,6 +16,7 @@ namespace NppGist.Tests
 		[SetUp]
 		public void Init()
 		{
+			// Enter your access token with gist scope in App.config
 			AccessToken = ConfigurationManager.AppSettings["AccessToken"];
 		}
 
