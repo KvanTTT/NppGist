@@ -310,6 +310,7 @@ namespace NppGist.Forms
 					cbPublic.Enabled = true;
 					cbPublic.Checked = true;
 					tbGistName.Text = string.Empty;
+					tbGistLink.Text = string.Empty;
 				}
 				else
 				{
@@ -368,11 +369,6 @@ namespace NppGist.Forms
 			}
 		}
 
-		private void cbPublic_CheckedChanged(object sender, EventArgs e)
-		{
-
-		}
-
 		private void btnCancel_Click(object sender, EventArgs e)
 		{
 			CloseDialog = true;
@@ -386,15 +382,8 @@ namespace NppGist.Forms
 				GuiUtils.RenameItem(tvGists, Gists, true);
 		}
 
-		private void tbGistName_KeyPress(object sender, KeyPressEventArgs e)
-		{
-			//GuiUtils.TextBoxKeyPressRestrictInvalidFilenameChars(e);
-		}
-
 		private void tbGistName_TextChanged(object sender, EventArgs e)
 		{
-			//GuiUtils.TextBoxTextChangedRestrictInvalidFilenameChars((TextBox)sender);
-
 			DetectExtensionTimer.Change(200, Timeout.Infinite);
 		}
 

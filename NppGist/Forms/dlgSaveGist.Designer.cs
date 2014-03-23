@@ -74,7 +74,6 @@
 			this.cbPublic.TabIndex = 33;
 			this.cbPublic.Text = "Public";
 			this.cbPublic.UseVisualStyleBackColor = true;
-			this.cbPublic.CheckedChanged += new System.EventHandler(this.cbPublic_CheckedChanged);
 			// 
 			// btnCancel
 			// 
@@ -223,7 +222,6 @@
 			this.tbGistName.Size = new System.Drawing.Size(149, 20);
 			this.tbGistName.TabIndex = 40;
 			this.tbGistName.TextChanged += new System.EventHandler(this.tbGistName_TextChanged);
-			this.tbGistName.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.tbGistName_KeyPress);
 			// 
 			// btnRename
 			// 
