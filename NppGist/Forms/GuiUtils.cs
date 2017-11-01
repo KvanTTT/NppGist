@@ -200,9 +200,8 @@ namespace NppGist.Forms
 			else
 			{
 				cmbLanguage.Enabled = false;
-				var response = Utils.SendJsonRequest<JsonObject>(string.Format("{0}/languages/detect?name={1}",
-					Main.GistUrl, HttpUtility.UrlEncode(tbFilename.Text)));
-				cmbLanguage.SelectedItem = response["language"];
+				//languages/detect? is no longer supported by api. See here https://developer.github.com/v3/gists/
+				cmbLanguage.SelectedItem = "none";
 			}
 		}
 
