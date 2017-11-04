@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace NppGist.Forms
@@ -8,6 +9,7 @@ namespace NppGist.Forms
         public frmAbout()
         {
             InitializeComponent();
+            lblName.Text = "NppGist " + Assembly.GetExecutingAssembly().GetName().Version;
         }
 
         private void linkSource_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
