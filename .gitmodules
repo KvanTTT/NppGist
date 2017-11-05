@@ -1,0 +1,3 @@
+[submodule "NppNetInf"]
+	path = NppNetInf
+	url = https://github.com/KvanTTT/NppNetInf.git
