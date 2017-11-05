@@ -33,6 +33,9 @@ namespace NppGist.Forms
             cbCloseDialog.Checked = Main.CloseSaveDialog;
 
             DetectExtensionTimer = new System.Threading.Timer(_ => GuiUtils.UpdateExtenstionResult(cmbLanguage, tbGistName), null, 0, Timeout.Infinite);
+
+            toolTip.SetToolTip(btnGoToGitHub, "Open Gist in Browser");
+            toolTip.SetToolTip(btnUpdate, "Update Gists");
         }
 
         private void frmSaveGist_Load(object sender, EventArgs e)
@@ -306,7 +309,7 @@ namespace NppGist.Forms
                     btnDelete.Enabled = false;
                     btnRename.Enabled = false;
                     cbPublic.Enabled = true;
-                    cbPublic.Checked = true;
+                    cbPublic.Checked = false;
                     tbGistName.Text = string.Empty;
                     tbGistLink.Text = string.Empty;
                 }

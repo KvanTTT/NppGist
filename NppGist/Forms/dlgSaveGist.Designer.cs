@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(dlgSaveGist));
             this.label2 = new System.Windows.Forms.Label();
             this.cbPublic = new System.Windows.Forms.CheckBox();
@@ -51,6 +52,7 @@
             this.cbCloseDialog = new System.Windows.Forms.CheckBox();
             this.btnGoToGitHub = new System.Windows.Forms.Button();
             this.btnUpdate = new System.Windows.Forms.Button();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             this.SuspendLayout();
             // 
             // label2
@@ -89,8 +91,8 @@
             // 
             // tvGists
             // 
-            this.tvGists.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-            | System.Windows.Forms.AnchorStyles.Left)
+            this.tvGists.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tvGists.Location = new System.Drawing.Point(12, 38);
             this.tvGists.Name = "tvGists";
@@ -150,7 +152,7 @@
             // 
             // tbDescription
             // 
-            this.tbDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.tbDescription.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tbDescription.Enabled = false;
             this.tbDescription.Location = new System.Drawing.Point(363, 225);
@@ -353,5 +355,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.CheckBox cbCloseDialog;
         private System.Windows.Forms.Button btnGoToGitHub;
+        private System.Windows.Forms.ToolTip toolTip;
     }
 }

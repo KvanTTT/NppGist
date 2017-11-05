@@ -22,6 +22,9 @@ namespace NppGist.Forms
         private void frmGists_Load(object sender, EventArgs e)
         {
             btnUpdate_Click(this, null);
+
+            toolTip.SetToolTip(btnGoToGitHub, "Open Gist in Browser");
+            toolTip.SetToolTip(btnUpdate, "Update Gists");
         }
 
         private void btnUpdate_Click(object sender, EventArgs e)
