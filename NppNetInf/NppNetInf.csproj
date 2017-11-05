@@ -83,7 +83,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ClikeStringArray.cs" />
-    <Compile Include="DllExportAttribute.cs" />
+    <Compile Include="DllExport\DllExportAttribute.cs" />
     <Compile Include="Docking.cs" />
     <Compile Include="GatewayDomain.cs" />
     <Compile Include="PluginMain.cs" />
@@ -100,6 +100,14 @@
     <Compile Include="Scintilla.cs" />
     <Compile Include="UnmanagedExports.cs" />
     <Compile Include="Win32.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="DllExport\Mono.Cecil.dll" />
+    <Content Include="DllExport\NppPlugin.DllExport.dll" />
+    <Content Include="DllExport\NppPlugin.DllExport.MSBuild.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DllExport\NppPlugin.DllExport.targets" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
