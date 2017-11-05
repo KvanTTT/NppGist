@@ -21,16 +21,10 @@ build:
   verbosity: minimal
 test:
   assemblies:
-  - NppGist.Tests\Unit\bin\x86\$(configuration)\*.Tests.dll
+  - NppGist.Tests\Unit\bin\$(PLATFORM)\$(CONFIGURATION)\*.Tests.dll
 after_test:
 - cmd: >-
-    cd NppGist\bin
-
-    7z a NppGist-x86-%APPVEYOR_BUILD_VERSION%.zip x86\%CONFIGURATION%\NppGist.dll
-
-    7z a NppGist-x64-%APPVEYOR_BUILD_VERSION%.zip x64\%CONFIGURATION%\NppGist.dll
+    7z a NppGist-%PLATFORM%-%APPVEYOR_BUILD_VERSION%.zip NppGist\bin\%PLATFORM%\%CONFIGURATION%\NppGist.dll
 artifacts:
-- path: bin\NppGist-x86-$(APPVEYOR_BUILD_VERSION).zip
-  name: NppGist-x86
-- path: bin\NppGist-x64-$(APPVEYOR_BUILD_VERSION).zip
-  name: NppGist-x64
+- path: NppGist-$(PLATFORM)-$(APPVEYOR_BUILD_VERSION).zip
+  name: NppGist-$(PLATFORM)
