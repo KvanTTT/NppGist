@@ -11,8 +11,8 @@ for JSON serialization & deserialization.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/2ne043y9rql0k00i/branch/master?svg=true)](https://ci.appveyor.com/project/KvanTTT/nppgist/branch/master)
 
-Contains both [x86](https://ci.appveyor.com/project/KvanTTT/nppgist/build/job/22r8k99gckt2g3xj/artifacts)
-and [x64](https://ci.appveyor.com/project/KvanTTT/nppgist/build/job/45jn2b9y82glxcx5/artifacts) builds.
+Contains both x86
+and x64 [artifacts](https://ci.appveyor.com/project/KvanTTT/nppgist).
 
 ## Sample screen
 
