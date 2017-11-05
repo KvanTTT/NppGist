@@ -1,5 +1,5 @@
 ﻿using NppGist.Forms;
-using NppPluginNET;
+using NppNetInf;
 using System;
 using System.Drawing;
 using System.IO;
@@ -10,20 +10,18 @@ using System.Windows.Forms;
 
 namespace NppGist
 {
-    class Main
+    class Main : PluginMain
     {
-        #region " Fields "
-
         internal const string ApiUrl = "https://api.github.com";
         internal const string GistUrl = "https://gist.github.com";
-        internal const string PluginName = "NppGist";
         internal static string IniFileName = null;
         internal static string Token = null;
         internal static string Login = null;
         internal static bool SaveLocally = false;
         internal static bool CloseSaveDialog = true;
         internal static bool CloseOpenDialog = true;
-        
+        internal const string pluginName = "NppGist";
+
         static Bitmap tbLoad = Properties.Resources.download;
         static Bitmap tbSave = Properties.Resources.upload;
         static int TokenCommandId = 0;
@@ -31,28 +29,31 @@ namespace NppGist
         static int SaveCommandId = 2;
         static int AboutCommandId = 3;
 
-        #endregion
-
-        #region " StartUp/CleanUp "
+        public override string PluginName => pluginName;
 
         static Main()
         {
             AppDomain.CurrentDomain.AssemblyResolve += ResolveEventHandler;
         }
 
-        internal static void CommandMenuInit()
+        public Main()
+            : base()
+        {
+        }
+
+        public override void CommandMenuInit()
         {
             string pluginsConfigDir = PluginBase.GetPluginsConfigDir();
             if (!Directory.Exists(pluginsConfigDir))
                 Directory.CreateDirectory(pluginsConfigDir);
-            IniFileName = Path.Combine(pluginsConfigDir, PluginName + ".ini");
+            IniFileName = Path.Combine(pluginsConfigDir, pluginName + ".ini");
 
             StringBuilder str = new StringBuilder(100);
-            Win32.GetPrivateProfileString("Settings", "Login", string.Empty, str, str.Capacity, IniFileName);
+            Win32.GetPrivateProfileString("Settings", "Login", string.Empty, str, (uint)str.Capacity, IniFileName);
             Login = str.ToString();
 
             str.Clear();
-            Win32.GetPrivateProfileString("Settings", "AccessToken", string.Empty, str, str.Capacity, IniFileName);
+            Win32.GetPrivateProfileString("Settings", "AccessToken", string.Empty, str, (uint)str.Capacity, IniFileName);
             try
             {
                 Token = AccessToken.DecryptToken(str.ToString());
@@ -72,42 +73,22 @@ namespace NppGist
             PluginBase.SetCommand(AboutCommandId, "About", AboutCommand);
         }
 
-        private static Assembly ResolveEventHandler(object sender, ResolveEventArgs args)
-        {
-            string resource = string.Format("{0}.{1}.dll", PluginName, args.Name.Remove(args.Name.IndexOf(',')));
-            Assembly currentAssembly = Assembly.GetExecutingAssembly();
-            using (Stream stream = currentAssembly.GetManifestResourceStream(resource))
-            {
-                var bytes = new byte[(int)stream.Length];
-                stream.Read(bytes, 0, (int)stream.Length);
-                return Assembly.Load(bytes);
-            }
-        }
-
-        internal static void SetToolBarIcon()
+        public override void SetToolBarIcon()
         {
             toolbarIcons tbIcons = new toolbarIcons();
             tbIcons.hToolbarBmp = tbLoad.GetHbitmap();
             IntPtr pTbIcons = Marshal.AllocHGlobal(Marshal.SizeOf(tbIcons));
             Marshal.StructureToPtr(tbIcons, pTbIcons, false);
-            Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ADDTOOLBARICON, PluginBase._funcItems.Items[OpenCommandId]._cmdID, pTbIcons);
+            Win32.SendMessage(PluginBase.NppData._nppHandle, (uint)NppMsg.NPPM_ADDTOOLBARICON, PluginBase.FuncItems.Items[OpenCommandId]._cmdID, pTbIcons);
             Marshal.FreeHGlobal(pTbIcons);
 
             tbIcons = new toolbarIcons();
             tbIcons.hToolbarBmp = tbSave.GetHbitmap();
             pTbIcons = Marshal.AllocHGlobal(Marshal.SizeOf(tbIcons));
             Marshal.StructureToPtr(tbIcons, pTbIcons, false);
-            Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_ADDTOOLBARICON, PluginBase._funcItems.Items[SaveCommandId]._cmdID, pTbIcons);
+            Win32.SendMessage(PluginBase.NppData._nppHandle, (uint)NppMsg.NPPM_ADDTOOLBARICON, PluginBase.FuncItems.Items[SaveCommandId]._cmdID, pTbIcons);
             Marshal.FreeHGlobal(pTbIcons);
         }
-
-        internal static void PluginCleanUp()
-        {
-        }
-
-        #endregion
-
-        #region " Menu functions "
 
         internal static void EnterAccessTokenCommand()
         {
@@ -139,6 +120,16 @@ namespace NppGist
             frmAbout.ShowDialog();
         }
 
-        #endregion
+        private static Assembly ResolveEventHandler(object sender, ResolveEventArgs args)
+        {
+            string resource = string.Format("{0}.{1}.dll", pluginName, args.Name.Remove(args.Name.IndexOf(',')));
+            Assembly currentAssembly = Assembly.GetExecutingAssembly();
+            using (Stream stream = currentAssembly.GetManifestResourceStream(resource))
+            {
+                var bytes = new byte[(int)stream.Length];
+                stream.Read(bytes, 0, (int)stream.Length);
+                return Assembly.Load(bytes);
+            }
+        }
     }
 }

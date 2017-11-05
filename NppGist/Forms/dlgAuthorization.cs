@@ -1,4 +1,4 @@
-﻿using NppPluginNET;
+﻿using NppNetInf;
 using ServiceStack.Text;
 using System;
 using System.Collections.Generic;

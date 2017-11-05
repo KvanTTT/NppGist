@@ -1,4 +1,4 @@
-﻿using NppPluginNET;
+﻿using NppNetInf;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -107,12 +107,12 @@ namespace NppGist.Forms
                             Clipboard.SetText(" ");
                         }
 
-                        Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_MENUCOMMAND, 0, NppMenuCmd.IDM_FILE_NEW);
+                        Win32.SendMessage(PluginBase.NppData._nppHandle, (uint)NppMsg.NPPM_MENUCOMMAND, 0, NppMenuCmd.IDM_FILE_NEW);
                         LangType langType;
                         PluginBase.SetCurrentFileText(fileContent.Remove(50));
                         PluginBase.AppendTextToCurrentFile(fileContent.Substring(50));
                         if (file.Language != null && Lists.GistNppLangs.TryGetValue(file.Language, out langType))
-                            Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_SETCURRENTLANGTYPE, 0, (int)langType);
+                            Win32.SendMessage(PluginBase.NppData._nppHandle, (uint)NppMsg.NPPM_SETCURRENTLANGTYPE, 0, (int)langType);
 
                         if (clipboardText != null)
                             Clipboard.SetText(clipboardText);
@@ -121,7 +121,7 @@ namespace NppGist.Forms
                     }
                     else
                     {
-                        var dir = PluginBase.GetPluginsConfigDir() + @"\..\" + Main.PluginName;
+                        var dir = PluginBase.GetPluginsConfigDir() + @"\..\" + Main.pluginName;
                         if (!Directory.Exists(dir))
                             Directory.CreateDirectory(dir);
                         string gistDirectory;
@@ -168,7 +168,7 @@ namespace NppGist.Forms
                         {
                             if (rewrite)
                                 File.WriteAllText(filename, fileContent);
-                            Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_DOOPEN, 0, filename);
+                            Win32.SendMessage(PluginBase.NppData._nppHandle, (uint)NppMsg.NPPM_DOOPEN, 0, filename);
                             if (cbCloseOpenDialog.Checked)
                                 CloseDialog = true;
                         }

@@ -1,4 +1,4 @@
-﻿using NppPluginNET;
+﻿using NppNetInf;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;

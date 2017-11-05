@@ -1,4 +1,4 @@
-﻿using NppPluginNET;
+﻿using NppNetInf;
 using ServiceStack.Text;
 using System;
 using System.Collections.Generic;
@@ -24,7 +24,7 @@ namespace NppGist.Forms
                 cmbLanguage.Items.Add(lang);
 
             LangType langType = LangType.L_TEXT;
-            Win32.SendMessage(PluginBase.nppData._nppHandle, NppMsg.NPPM_GETCURRENTLANGTYPE, 0, ref langType);
+            Win32.SendMessage(PluginBase.NppData._nppHandle, (uint) NppMsg.NPPM_GETCURRENTLANGTYPE, 0, ref langType);
             var gistNppLang = Lists.GistNppLangs.FirstOrDefault(lang => lang.Value == langType);
             if (gistNppLang.Key != null)
                 cmbLanguage.SelectedItem = gistNppLang.Key;

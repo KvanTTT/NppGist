@@ -1,4 +1,5 @@
-﻿using System;
+﻿// NPP plugin platform for .Net v0.93.96 by Kasper B. Graversen etc.
+using System;
 using System.Runtime.InteropServices;
 
 namespace NppPlugin.DllExport
@@ -21,20 +22,8 @@ namespace NppPlugin.DllExport
             CallingConvention = callingConvention;
         }
 
-        CallingConvention _callingConvention;
+        public CallingConvention CallingConvention { get; set; }
 
-        public CallingConvention CallingConvention
-        {
-            get { return _callingConvention; }
-            set { _callingConvention = value; }
-        }
-
-        string _exportName;
-
-        public string ExportName
-        {
-            get { return _exportName; }
-            set { _exportName = value; }
-        }
+        public string ExportName { get; set; }
     }
 }
