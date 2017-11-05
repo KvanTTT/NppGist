@@ -288,3 +288,4 @@ __pycache__/
 *.xsd.cs
 
 /NppGist/ServiceStack.Text.dll
+/NppNetInf/DllExport/Mono.Cecil.dll

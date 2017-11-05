@@ -102,12 +102,19 @@
     <Compile Include="Win32.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DllExport\Mono.Cecil.dll" />
     <Content Include="DllExport\NppPlugin.DllExport.dll" />
     <Content Include="DllExport\NppPlugin.DllExport.MSBuild.dll" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="DllExport\NppPlugin.DllExport.targets" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>set monocecil="$(ProjectDir)DllExport\Mono.Cecil.dll"
+if not exist %25monocecil%25 (
+    copy "$(SolutionDir)packages\Mono.Cecil.0.9.6.4\lib\net45\Mono.Cecil.dll" %25monocecil%25
+)</PreBuildEvent>
+  </PropertyGroup>
 </Project>
