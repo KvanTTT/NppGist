@@ -21,7 +21,7 @@ build:
   verbosity: minimal
 test:
   assemblies:
-  - NppGist.Tests\Unit\bin\$(PLATFORM)\$(CONFIGURATION)\*.Tests.dll
+  - NppGist.Tests\bin\$(PLATFORM)\$(CONFIGURATION)\NppGist.Tests.dll
 after_test:
 - cmd: >-
     cd NppGist\bin\%PLATFORM%\%CONFIGURATION%
