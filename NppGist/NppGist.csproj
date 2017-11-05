@@ -86,55 +86,55 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\NppNetInf\ClikeStringArray.cs">
+    <Compile Include="..\NppNetInf\src\ClikeStringArray.cs">
       <Link>NppNetInf\ClikeStringArray.cs</Link>
     </Compile>
-    <Compile Include="..\NppNetInf\DllExport\DllExportAttribute.cs">
+    <Compile Include="..\NppNetInf\src\DllExport\DllExportAttribute.cs">
       <Link>NppNetInf\DllExportAttribute.cs</Link>
     </Compile>
-    <Compile Include="..\NppNetInf\Docking.cs">
+    <Compile Include="..\NppNetInf\src\Docking.cs">
       <Link>NppNetInf\Docking.cs</Link>
     </Compile>
-    <Compile Include="..\NppNetInf\GatewayDomain.cs">
+    <Compile Include="..\NppNetInf\src\GatewayDomain.cs">
       <Link>NppNetInf\GatewayDomain.cs</Link>
     </Compile>
-    <Compile Include="..\NppNetInf\IScintillaGateway.cs">
+    <Compile Include="..\NppNetInf\src\IScintillaGateway.cs">
       <Link>NppNetInf\IScintillaGateway.cs</Link>
     </Compile>
-    <Compile Include="..\NppNetInf\MenuCmdID.cs">
+    <Compile Include="..\NppNetInf\src\MenuCmdID.cs">
       <Link>NppNetInf\MenuCmdID.cs</Link>
     </Compile>
-    <Compile Include="..\NppNetInf\Msgs.cs">
+    <Compile Include="..\NppNetInf\src\Msgs.cs">
       <Link>NppNetInf\Msgs.cs</Link>
     </Compile>
-    <Compile Include="..\NppNetInf\NotepadPPGateway.cs">
+    <Compile Include="..\NppNetInf\src\NotepadPPGateway.cs">
       <Link>NppNetInf\NotepadPPGateway.cs</Link>
     </Compile>
-    <Compile Include="..\NppNetInf\NppPluginNETBase.cs">
+    <Compile Include="..\NppNetInf\src\NppPluginNETBase.cs">
       <Link>NppNetInf\NppPluginNETBase.cs</Link>
     </Compile>
-    <Compile Include="..\NppNetInf\NppPluginNETHelper.cs">
+    <Compile Include="..\NppNetInf\src\NppPluginNETHelper.cs">
       <Link>NppNetInf\NppPluginNETHelper.cs</Link>
     </Compile>
-    <Compile Include="..\NppNetInf\PluginMain.cs">
+    <Compile Include="..\NppNetInf\src\PluginMain.cs">
       <Link>NppNetInf\PluginMain.cs</Link>
     </Compile>
-    <Compile Include="..\NppNetInf\Preference.cs">
+    <Compile Include="..\NppNetInf\src\Preference.cs">
       <Link>NppNetInf\Preference.cs</Link>
     </Compile>
-    <Compile Include="..\NppNetInf\Resource.cs">
+    <Compile Include="..\NppNetInf\src\Resource.cs">
       <Link>NppNetInf\Resource.cs</Link>
     </Compile>
-    <Compile Include="..\NppNetInf\Scintilla.cs">
+    <Compile Include="..\NppNetInf\src\Scintilla.cs">
       <Link>NppNetInf\Scintilla.cs</Link>
     </Compile>
-    <Compile Include="..\NppNetInf\ScintillaGateway.cs">
+    <Compile Include="..\NppNetInf\src\ScintillaGateway.cs">
       <Link>NppNetInf\ScintillaGateway.cs</Link>
     </Compile>
-    <Compile Include="..\NppNetInf\UnmanagedExports.cs">
+    <Compile Include="..\NppNetInf\src\UnmanagedExports.cs">
       <Link>NppNetInf\UnmanagedExports.cs</Link>
     </Compile>
-    <Compile Include="..\NppNetInf\Win32.cs">
+    <Compile Include="..\NppNetInf\src\Win32.cs">
       <Link>NppNetInf\Win32.cs</Link>
     </Compile>
     <Compile Include="AccessToken.cs" />
@@ -238,7 +238,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)NppNetInf\DllExport\NppPlugin.DllExport.targets" />
+  <Import Project="$(SolutionDir)NppNetInf\src\DllExport\NppPlugin.DllExport.targets" />
   <PropertyGroup>
     <PreBuildEvent>copy "$(SolutionDir)packages\ServiceStack.Text.4.5.14\lib\net45\ServiceStack.Text.dll" "$(ProjectDir)ServiceStack.Text.dll"</PreBuildEvent>
   </PropertyGroup>

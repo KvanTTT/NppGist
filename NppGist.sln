@@ -7,8 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NppGist", "NppGist\NppGist.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NppGist.Tests", "NppGist.Tests\NppGist.Tests.csproj", "{86F0B05B-24F9-4096-B4A6-22E453A0CF58}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NppNetInf", "NppNetInf\NppNetInf.csproj", "{03F07222-9881-4050-8EAF-7A71434B038F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -33,14 +31,6 @@ Global
 		{86F0B05B-24F9-4096-B4A6-22E453A0CF58}.Release|x64.Build.0 = Release|x64
 		{86F0B05B-24F9-4096-B4A6-22E453A0CF58}.Release|x86.ActiveCfg = Release|x86
 		{86F0B05B-24F9-4096-B4A6-22E453A0CF58}.Release|x86.Build.0 = Release|x86
-		{03F07222-9881-4050-8EAF-7A71434B038F}.Debug|x64.ActiveCfg = Debug|x64
-		{03F07222-9881-4050-8EAF-7A71434B038F}.Debug|x64.Build.0 = Debug|x64
-		{03F07222-9881-4050-8EAF-7A71434B038F}.Debug|x86.ActiveCfg = Debug|x86
-		{03F07222-9881-4050-8EAF-7A71434B038F}.Debug|x86.Build.0 = Debug|x86
-		{03F07222-9881-4050-8EAF-7A71434B038F}.Release|x64.ActiveCfg = Release|x64
-		{03F07222-9881-4050-8EAF-7A71434B038F}.Release|x64.Build.0 = Release|x64
-		{03F07222-9881-4050-8EAF-7A71434B038F}.Release|x86.ActiveCfg = Release|x86
-		{03F07222-9881-4050-8EAF-7A71434B038F}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
