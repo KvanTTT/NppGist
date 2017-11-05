@@ -24,7 +24,9 @@ test:
   - NppGist.Tests\Unit\bin\$(PLATFORM)\$(CONFIGURATION)\*.Tests.dll
 after_test:
 - cmd: >-
-    7z a NppGist-%PLATFORM%-%APPVEYOR_BUILD_VERSION%.zip NppGist\bin\%PLATFORM%\%CONFIGURATION%\NppGist.dll
+    cd NppGist\bin\%PLATFORM%\%CONFIGURATION%
+
+    7z a NppGist-%PLATFORM%-%APPVEYOR_BUILD_VERSION%.zip NppGist.dll
 artifacts:
-- path: NppGist-$(PLATFORM)-$(APPVEYOR_BUILD_VERSION).zip
-  name: NppGist-$(PLATFORM)
+- path: NppGist\bin\%PLATFORM%\%CONFIGURATION%\NppGist-$(PLATFORM)-$(APPVEYOR_BUILD_VERSION).zip
+  name: NppGist-$(PLATFORM)-$(APPVEYOR_BUILD_VERSION)
