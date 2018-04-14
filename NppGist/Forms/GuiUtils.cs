@@ -29,7 +29,7 @@ namespace NppGist.Forms
                         treeView.SelectedNode.Parent.Name == AllGistsKey)
                     {
                         if ((result = MessageBox.Show(string.Format("Do you want to delete gist \"{0}\"?", file.Filename), string.Empty, MessageBoxButtons.YesNo))
-                            == System.Windows.Forms.DialogResult.Yes)
+                            == DialogResult.Yes)
                         {
                             Utils.SendRequest(string.Format("{0}/gists/{1}?access_token={2}", Main.ApiUrl, gist.Id, Main.Token), WebRequestMethod.Delete);
                             gists.Remove(gist.Id);
@@ -61,59 +61,66 @@ namespace NppGist.Forms
             DialogResult result = DialogResult.None;
             if (treeView.SelectedNode != null && treeView.SelectedNode.Name != AllGistsKey)
             {
-                var strs = treeView.SelectedNode.Name.Split('/');
-                var gist = gists[strs[0]];
-                var file = gist.Files[strs[1]];
-
-                var fileNameDialog = new dlgFilename(file.Filename);
-                if ((result = fileNameDialog.ShowDialog()) == DialogResult.OK &&
-                    fileNameDialog.Filename != file.Filename)
+                try
                 {
-                    if (Utils.IsFilenameSafe(fileNameDialog.Filename))
-                    {
-                        string oldFileName = file.Filename;
-                        bool save = true;
-                        if (gist.Files.FirstOrDefault(gistFile => gistFile.Key == fileNameDialog.Filename).Key != null &&
-                            (result = MessageBox.Show(string.Format("Do you want to replace existing file \"{0}\"", fileNameDialog.Filename)
-                                , string.Empty, MessageBoxButtons.YesNo)) != DialogResult.Yes)
-                        {
-                            save = false;
-                            result = DialogResult.No;
-                        }
+                    var strs = treeView.SelectedNode.Name.Split('/');
+                    var gist = gists[strs[0]];
+                    var file = gist.Files[strs[1]];
 
-                        if (save)
+                    var fileNameDialog = new dlgFilename(file.Filename);
+                    if ((result = fileNameDialog.ShowDialog()) == DialogResult.OK &&
+                        fileNameDialog.Filename != file.Filename)
+                    {
+                        if (Utils.IsFilenameSafe(fileNameDialog.Filename))
                         {
-                            var fileContent = Utils.SendRequest(file.RawUrl);
-                            var renamingGist = new UpdatedGist();
-                            renamingGist.Files = new Dictionary<string, UpdatedFile>()
+                            string oldFileName = file.Filename;
+                            bool save = true;
+                            if (gist.Files.FirstOrDefault(gistFile => gistFile.Key == fileNameDialog.Filename).Key != null &&
+                                (result = MessageBox.Show(string.Format("Do you want to replace existing file \"{0}\"", fileNameDialog.Filename)
+                                    , string.Empty, MessageBoxButtons.YesNo)) != DialogResult.Yes)
                             {
-                                { file.Filename,
-                                new UpdatedFile
+                                save = false;
+                                result = DialogResult.No;
+                            }
+
+                            if (save)
+                            {
+                                var fileContent = Utils.SendRequest(file.RawUrl);
+                                var renamingGist = new UpdatedGist();
+                                renamingGist.Files = new Dictionary<string, UpdatedFile>()
                                 {
-                                    Filename = fileNameDialog.Filename,
-                                    Content = fileContent
-                                }}
-                            };
-                            var bytes = Encoding.UTF8.GetBytes(JsonSerializer.SerializeToString<UpdatedGist>(renamingGist));
+                                    { file.Filename,
+                                    new UpdatedFile
+                                    {
+                                        Filename = fileNameDialog.Filename,
+                                        Content = fileContent
+                                    }}
+                                };
+                                var bytes = Encoding.UTF8.GetBytes(JsonSerializer.SerializeToString<UpdatedGist>(renamingGist));
 
-                            try
-                            {
-                                var responseGist = Utils.SendJsonRequest<Gist>(string.Format("{0}/gists/{1}?access_token={2}", Main.ApiUrl, gist.Id, Main.Token),
-                                    WebRequestMethod.Patch, null, bytes);
-                                gists[gist.Id] = responseGist;
-                                RebuildTreeView(treeView, gists, showRoot);
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show(string.Format("Unable to reaname gist \"{0}\".{1}Error message: {2}",
-                                    file.Filename, Environment.NewLine, ex.Message));
+                                try
+                                {
+                                    var responseGist = Utils.SendJsonRequest<Gist>(string.Format("{0}/gists/{1}?access_token={2}", Main.ApiUrl, gist.Id, Main.Token),
+                                        WebRequestMethod.Patch, null, bytes);
+                                    gists[gist.Id] = responseGist;
+                                    RebuildTreeView(treeView, gists, showRoot);
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show(string.Format("Unable to rename gist \"{0}\".{1}Error message: {2}",
+                                        file.Filename, Environment.NewLine, ex.Message));
+                                }
                             }
                         }
+                        else
+                        {
+                            MessageBox.Show("File containts invalid characters");
+                        }
                     }
-                    else
-                    {
-                        MessageBox.Show("File containts invalid characters");
-                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Unable to rename gist or file." + Environment.NewLine + "Error message: " + ex.Message);
                 }
             }
             return result;
@@ -121,53 +128,60 @@ namespace NppGist.Forms
 
         public static void RebuildTreeView(TreeView treeView, Dictionary<string, Gist> gists, bool showRoot)
         {
-            treeView.Nodes.Clear();
-            TreeNodeCollection collection;
-            if (showRoot)
-                collection = treeView.Nodes.Add(AllGistsKey, "All Gists").Nodes;
-            else
-                collection = treeView.Nodes;
-
-            foreach (var gist in gists)
+            try
             {
-                var value = gist.Value;
-                if (value.Files.Count == 1)
+                treeView.Nodes.Clear();
+                TreeNodeCollection collection;
+                if (showRoot)
+                    collection = treeView.Nodes.Add(AllGistsKey, "All Gists").Nodes;
+                else
+                    collection = treeView.Nodes;
+
+                foreach (var gist in gists)
                 {
-                    var file = value.Files.First().Value;
-                    var node = new TreeNode(GetGistName(value));
-                    node.Name = GetTreeViewKey(value, file);
-                    if (!gist.Value.Public)
+                    var value = gist.Value;
+                    if (value.Files.Count == 1)
                     {
-                        node.BackColor = SecretGistColor;
-                        node.ForeColor = SecretGistForeColor;
-                    }
-                    collection.Add(node);
-                }
-                else if (value.Files.Count > 1)
-                {
-                    var firstFile = value.Files.First().Value;
-                    var parent = new TreeNode(GetGistName(value));
-                    parent.Name = GetTreeViewKey(value, firstFile);
-                    if (!gist.Value.Public)
-                    {
-                        parent.BackColor = SecretGistColor;
-                        parent.ForeColor = SecretGistForeColor;
-                    }
-                    collection.Add(parent);
-                    foreach (var file in value.Files)
-                    {
-                        var fileValue = file.Value;
-                        var node = parent.Nodes.Add(GetTreeViewKey(value, fileValue), fileValue.Filename);
+                        var file = value.Files.First().Value;
+                        var node = new TreeNode(GetGistName(value));
+                        node.Name = GetTreeViewKey(value, file);
                         if (!gist.Value.Public)
                         {
                             node.BackColor = SecretGistColor;
                             node.ForeColor = SecretGistForeColor;
                         }
+                        collection.Add(node);
+                    }
+                    else if (value.Files.Count > 1)
+                    {
+                        var firstFile = value.Files.First().Value;
+                        var parent = new TreeNode(GetGistName(value));
+                        parent.Name = GetTreeViewKey(value, firstFile);
+                        if (!gist.Value.Public)
+                        {
+                            parent.BackColor = SecretGistColor;
+                            parent.ForeColor = SecretGistForeColor;
+                        }
+                        collection.Add(parent);
+                        foreach (var file in value.Files)
+                        {
+                            var fileValue = file.Value;
+                            var node = parent.Nodes.Add(GetTreeViewKey(value, fileValue), fileValue.Filename);
+                            if (!gist.Value.Public)
+                            {
+                                node.BackColor = SecretGistColor;
+                                node.ForeColor = SecretGistForeColor;
+                            }
+                        }
                     }
                 }
+                treeView.ExpandAll();
+                treeView.Nodes[0].EnsureVisible();
             }
-            treeView.ExpandAll();
-            treeView.Nodes[0].EnsureVisible();
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error during tree update: " + ex.Message);
+            }
         }
 
         public static void TextBoxKeyPressRestrictInvalidFilenameChars(KeyPressEventArgs e)

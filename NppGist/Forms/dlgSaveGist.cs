@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows.Forms;
@@ -40,48 +41,59 @@ namespace NppGist.Forms
 
         private void frmSaveGist_Load(object sender, EventArgs e)
         {
-            btnUpdate_Click(sender, e);
-            var currentFileName = PluginBase.GetFullCurrentFileName();
-            tvGists.Select();
-            if (currentFileName.StartsWith("new"))
+            try
             {
-                tvGists.SelectedNode = tvGists.Nodes[0];
-            }
-            else
-            {
-                tvGists.SelectedNode = null;
-                bool nodeFound = false;
-                var shortFileName = Path.GetFileName(currentFileName);
-                foreach (var keyGist in Gists)
+                if (!UpdateGists())
                 {
-                    var gist = keyGist.Value;
-                    if (gist.Files.Count == 1 && gist.Files.First().Key.StartsWith("gistfile"))
-                    {
-                        if (shortFileName == "gist-" + gist.Id)
-                        {
-                            tvGists.SelectedNode = tvGists.Nodes.Find(GuiUtils.GetTreeViewKey(gist, gist.Files.First().Value), true)[0];
-                            nodeFound = true;
-                            break;
-                        }
-                    }
-                    else
-                    {
-                        var gistFile = gist.Files.FirstOrDefault(file => Utils.GetSafeFilename(file.Key) == shortFileName);
-                        if (gistFile.Key != null)
-                        {
-                            tvGists.SelectedNode = tvGists.Nodes.Find(GuiUtils.GetTreeViewKey(gist, gistFile.Value), true)[0];
-                            nodeFound = true;
-                            break;
-                        }
-                    }
+                    return;
                 }
-                if (!nodeFound)
+
+                var currentFileName = PluginBase.GetFullCurrentFileName();
+                tvGists.Select();
+                if (currentFileName.StartsWith("new"))
                 {
                     tvGists.SelectedNode = tvGists.Nodes[0];
-                    tbGistName.Text = shortFileName;
                 }
-                tvGists.SelectedNode.EnsureVisible();
-                GuiUtils.UpdateExtenstionResult(cmbLanguage, tbGistName);
+                else
+                {
+                    tvGists.SelectedNode = null;
+                    bool nodeFound = false;
+                    var shortFileName = Path.GetFileName(currentFileName);
+                    foreach (var keyGist in Gists)
+                    {
+                        var gist = keyGist.Value;
+                        if (gist.Files.Count == 1 && gist.Files.First().Key.StartsWith("gistfile"))
+                        {
+                            if (shortFileName == "gist-" + gist.Id)
+                            {
+                                tvGists.SelectedNode = tvGists.Nodes.Find(GuiUtils.GetTreeViewKey(gist, gist.Files.First().Value), true)[0];
+                                nodeFound = true;
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            var gistFile = gist.Files.FirstOrDefault(file => Utils.GetSafeFilename(file.Key) == shortFileName);
+                            if (gistFile.Key != null)
+                            {
+                                tvGists.SelectedNode = tvGists.Nodes.Find(GuiUtils.GetTreeViewKey(gist, gistFile.Value), true)[0];
+                                nodeFound = true;
+                                break;
+                            }
+                        }
+                    }
+                    if (!nodeFound)
+                    {
+                        tvGists.SelectedNode = tvGists.Nodes[0];
+                        tbGistName.Text = shortFileName;
+                    }
+                    tvGists.SelectedNode.EnsureVisible();
+                    GuiUtils.UpdateExtenstionResult(cmbLanguage, tbGistName);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to load gist." + Environment.NewLine + "Error message: " + ex.Message);
             }
         }
 
@@ -276,17 +288,25 @@ namespace NppGist.Forms
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
+            UpdateGists();
+        }
+
+        private bool UpdateGists()
+        {
             try
             {
                 var gists = Utils.SendJsonRequest<List<Gist>>(string.Format("{0}/gists?access_token={1}", Main.ApiUrl, Main.Token));
-                Gists = gists.ToDictionary<Gist, string>(gist => gist.Id);
+                Gists = gists.ToDictionary(gist => gist.Id);
                 GuiUtils.RebuildTreeView(tvGists, Gists, true);
+
+                return true;
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("Unable to connect to api.github.com. Try to refresh.{0}Error message: {1}",
-                    Environment.NewLine, ex.Message));
+                MessageBox.Show($"Unable to connect to api.github.com. Try to refresh.{Environment.NewLine}Error message: {ex.Message}");
             }
+
+            return false;
         }
 
         private void btnDelete_Click(object sender, EventArgs e)

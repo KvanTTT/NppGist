@@ -36,9 +36,9 @@ namespace NppGist.Forms
                     error = true;
                 }
             }
-            catch
+            catch (Exception ex)
             {
-                MessageBox.Show("Bad internet connection or wrong access token");
+                MessageBox.Show("Unable to send access token: " + ex.Message);
                 error = true;
             }
 

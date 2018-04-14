@@ -32,7 +32,7 @@ namespace NppGist.Forms
             try
             {
                 var gists = Utils.SendJsonRequest<List<Gist>>(string.Format("{0}/gists?access_token={1}", Main.ApiUrl, Main.Token));
-                Gists = gists.ToDictionary<Gist, string>(gist => gist.Id);
+                Gists = gists.ToDictionary(gist => gist.Id);
                 GuiUtils.RebuildTreeView(tvGists, Gists, false);
             }
             catch (Exception ex)
