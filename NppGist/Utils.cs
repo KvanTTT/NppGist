@@ -9,6 +9,11 @@ namespace NppGist
 {
     public class Utils
     {
+        static Utils()
+        {
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+        }
+
         public static string SendRequest(string url, WebRequestMethod method = WebRequestMethod.Get,
             Dictionary<string, string> headers = null, byte[] body = null, string contentType = "", int timeout = 5000)
         {
