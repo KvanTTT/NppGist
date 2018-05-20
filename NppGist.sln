@@ -11,14 +11,20 @@ Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
+		DebugNpp|x64 = DebugNpp|x64
+		DebugNpp|x86 = DebugNpp|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Debug|x64.ActiveCfg = Debug|x64
-		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Debug|x64.Build.0 = Debug|x64
+		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Debug|x64.ActiveCfg = DebugNpp|x64
+		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Debug|x64.Build.0 = DebugNpp|x64
 		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Debug|x86.ActiveCfg = Debug|x86
 		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Debug|x86.Build.0 = Debug|x86
+		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.DebugNpp|x64.ActiveCfg = DebugNpp|x64
+		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.DebugNpp|x64.Build.0 = DebugNpp|x64
+		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.DebugNpp|x86.ActiveCfg = DebugNpp|x86
+		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.DebugNpp|x86.Build.0 = DebugNpp|x86
 		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Release|x64.ActiveCfg = Release|x64
 		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Release|x64.Build.0 = Release|x64
 		{E56F6E12-089C-40ED-BCFD-923E5FA121A1}.Release|x86.ActiveCfg = Release|x86
@@ -27,6 +33,10 @@ Global
 		{86F0B05B-24F9-4096-B4A6-22E453A0CF58}.Debug|x64.Build.0 = Debug|x64
 		{86F0B05B-24F9-4096-B4A6-22E453A0CF58}.Debug|x86.ActiveCfg = Debug|x86
 		{86F0B05B-24F9-4096-B4A6-22E453A0CF58}.Debug|x86.Build.0 = Debug|x86
+		{86F0B05B-24F9-4096-B4A6-22E453A0CF58}.DebugNpp|x64.ActiveCfg = Debug|x64
+		{86F0B05B-24F9-4096-B4A6-22E453A0CF58}.DebugNpp|x64.Build.0 = Debug|x64
+		{86F0B05B-24F9-4096-B4A6-22E453A0CF58}.DebugNpp|x86.ActiveCfg = Release|x86
+		{86F0B05B-24F9-4096-B4A6-22E453A0CF58}.DebugNpp|x86.Build.0 = Release|x86
 		{86F0B05B-24F9-4096-B4A6-22E453A0CF58}.Release|x64.ActiveCfg = Release|x64
 		{86F0B05B-24F9-4096-B4A6-22E453A0CF58}.Release|x64.Build.0 = Release|x64
 		{86F0B05B-24F9-4096-B4A6-22E453A0CF58}.Release|x86.ActiveCfg = Release|x86
