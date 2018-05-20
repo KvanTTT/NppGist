@@ -124,18 +124,17 @@ namespace NppGist.Forms
                     }
                     else
                     {
-                        var dir = PluginBase.GetPluginsConfigDir() + @"\..\" + Main.pluginName;
-                        if (!Directory.Exists(dir))
-                            Directory.CreateDirectory(dir);
+                        if (!Directory.Exists(PluginBase.UserDataDir))
+                            Directory.CreateDirectory(PluginBase.UserDataDir);
                         string gistDirectory;
                         if (gist.Files.Count > 1)
                         {
-                            gistDirectory = dir + @"\" + gist.Id;
+                            gistDirectory = Path.Combine(PluginBase.UserDataDir, gist.Id);
                             if (!Directory.Exists(gistDirectory))
                                 Directory.CreateDirectory(gistDirectory);
                         }
                         else
-                            gistDirectory = dir;
+                            gistDirectory = PluginBase.UserDataDir;
 
                         string filename;
                         if (gist.Files.Count == 1 && file.Filename.StartsWith("gistfile"))
