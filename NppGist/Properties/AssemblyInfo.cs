@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Ivan Kochurkin (KvanTTT)")]
 [assembly: AssemblyProduct("NppGist")]
-[assembly: AssemblyCopyright("Copyright © KvanTTT 2014")]
+[assembly: AssemblyCopyright("Copyright © KvanTTT 2014-2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
