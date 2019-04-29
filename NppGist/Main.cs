@@ -124,12 +124,18 @@ namespace NppGist
         {
             string resource = string.Format("{0}.{1}.dll", pluginName, args.Name.Remove(args.Name.IndexOf(',')));
             Assembly currentAssembly = Assembly.GetExecutingAssembly();
+
             using (Stream stream = currentAssembly.GetManifestResourceStream(resource))
             {
-                var bytes = new byte[(int)stream.Length];
-                stream.Read(bytes, 0, (int)stream.Length);
-                return Assembly.Load(bytes);
+                if (stream != null)
+                {
+                    var bytes = new byte[(int)stream.Length];
+                    stream.Read(bytes, 0, (int)stream.Length);
+                    return Assembly.Load(bytes);
+                }
             }
+
+            return null;
         }
     }
 }
