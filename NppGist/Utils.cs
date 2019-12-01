@@ -17,15 +17,13 @@ namespace NppGist
         public static string SendRequest(string url, WebRequestMethod method = WebRequestMethod.Get,
             Dictionary<string, string> headers = null, byte[] body = null, string contentType = "", int timeout = 5000)
         {
-            Dictionary<string, string> responseHeaders;
-            return SendRequest(url, out responseHeaders, method, headers, body, contentType, timeout);
+            return SendRequest(url, out _, method, headers, body, contentType, timeout);
         }
 
         public static T SendJsonRequest<T>(string url, WebRequestMethod method = WebRequestMethod.Get,
             Dictionary<string, string> headers = null, byte[] body = null, string contentType = "", int timeout = 5000)
         {
-            Dictionary<string, string> responseHeaders;
-            return SendJsonRequest<T>(url, out responseHeaders, method, headers, body, contentType, timeout);
+            return SendJsonRequest<T>(url, out _, method, headers, body, contentType, timeout);
         }
 
         public static string SendRequest(string url, out Dictionary<string, string> responseHeaders,
@@ -33,8 +31,8 @@ namespace NppGist
             Dictionary<string, string> headers = null, byte[] body = null, string contentType = "", int timeout = 5000)
         {
             var request = MakeRequest(url, method, headers, body, contentType, timeout);
-            
-            string responseString = String.Empty;
+
+            string responseString;
             responseHeaders = new Dictionary<string, string>();
             using (var response = request.GetResponse())
             {
@@ -57,7 +55,7 @@ namespace NppGist
         {
             var request = MakeRequest(url, method, headers, body, contentType, timeout);
 
-            T result = default(T);
+            T result;
             responseHeaders = new Dictionary<string, string>();
             using (var response = request.GetResponse())
             {
@@ -137,7 +135,7 @@ namespace NppGist
 
         public static bool IsLatinLetterDigitOrUnderline(char c)
         {
-            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '_';
+            return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '_';
         }
 
         public static bool IsPunctuationOrSymbol(char c)

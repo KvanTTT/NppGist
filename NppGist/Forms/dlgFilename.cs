@@ -7,18 +7,12 @@ namespace NppGist
 {
     public partial class dlgFilename : Form
     {
-        private System.Threading.Timer _detectExtensionTimer;
+        private readonly System.Threading.Timer _detectExtensionTimer;
 
         public string Filename
         {
-            get
-            {
-                return tbFilename.Text;
-            }
-            set
-            {
-                tbFilename.Text = value;
-            }
+            get => tbFilename.Text;
+            set => tbFilename.Text = value;
         }
 
         public dlgFilename(string filename)

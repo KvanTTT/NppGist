@@ -10,8 +10,7 @@ namespace NppGist.Tests
         [Test]
         public void GetUser()
         {
-            Dictionary<string, string> responseHeaders;
-            var response = Utils.SendRequest("https://api.github.com/users/KvanTTT", out responseHeaders);
+            var response = Utils.SendRequest("https://api.github.com/users/KvanTTT", out var responseHeaders);
             var user = JsonSerializer.DeserializeFromString<User>(response);
         }
 

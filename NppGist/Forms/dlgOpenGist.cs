@@ -1,6 +1,7 @@
 ﻿using NppNetInf;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -9,8 +10,8 @@ namespace NppGist.Forms
 {
     public partial class dlgOpenGist : Form
     {
-        Dictionary<string, Gist> Gists;
-        bool CloseDialog;
+        Dictionary<string, Gist> gists;
+        bool closeDialog;
 
         public dlgOpenGist()
         {
@@ -31,14 +32,14 @@ namespace NppGist.Forms
         {
             try
             {
-                var gists = Utils.SendJsonRequest<List<Gist>>(string.Format("{0}/gists?access_token={1}", Main.ApiUrl, Main.Token));
-                Gists = gists.ToDictionary(gist => gist.Id);
-                GuiUtils.RebuildTreeView(tvGists, Gists, false);
+                var gists = Utils.SendJsonRequest<List<Gist>>($"{Main.ApiUrl}/gists?access_token={Main.Token}");
+                this.gists = gists.ToDictionary(gist => gist.Id);
+                GuiUtils.RebuildTreeView(tvGists, this.gists, false);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("Unable to connect to api.github.com. Try to refresh.{0}Error message: {1}",
-                    Environment.NewLine, ex.Message));
+                MessageBox.Show(
+                    $"Unable to connect to api.github.com. Try to refresh.{Environment.NewLine}Error message: {ex.Message}");
             }
         }
 
@@ -46,7 +47,7 @@ namespace NppGist.Forms
         {
             if (tvGists.SelectedNode != null)
             {
-                if (tvGists.SelectedNode.Parent != null || Gists[tvGists.SelectedNode.Name.Split('/')[0]].Files.Count == 1)
+                if (tvGists.SelectedNode.Parent != null || gists[tvGists.SelectedNode.Name.Split('/')[0]].Files.Count == 1)
                     btnOpen_Click(sender, e);
             }
         }
@@ -56,7 +57,7 @@ namespace NppGist.Forms
             if (tvGists.SelectedNode != null)
             {
                 var strs = tvGists.SelectedNode.Name.Split('/');
-                var gist = Gists[strs[0]];
+                var gist = gists[strs[0]];
                 var file = gist.Files[strs[1]];
                 if (tvGists.SelectedNode.Parent != null || gist.Files.Count == 1)
                 {
@@ -76,8 +77,8 @@ namespace NppGist.Forms
 
                 cbPublic.Checked = gist.Public;
                 tbLanguage.Text = file.Language ?? Lists.GistLangs[0];
-                tbCreateDate.Text = gist.CreatedAt.ToString();
-                tbUpdateDate.Text = gist.UpdatedAt.ToString();
+                tbCreateDate.Text = gist.CreatedAt.ToString(CultureInfo.InvariantCulture);
+                tbUpdateDate.Text = gist.UpdatedAt.ToString(CultureInfo.InvariantCulture);
                 tbDescription.Text = gist.Description;
                 btnDelete.Enabled = true;
             }
@@ -93,11 +94,11 @@ namespace NppGist.Forms
         {
             try
             {
-                CloseDialog = false;
+                closeDialog = false;
                 if (tvGists.SelectedNode != null)
                 {
                     var strs = tvGists.SelectedNode.Name.Split('/');
-                    var gist = Gists[strs[0]];
+                    var gist = gists[strs[0]];
                     var file = gist.Files[strs[1]];
                     var fileContent = Utils.SendRequest(file.RawUrl);
 
@@ -111,16 +112,15 @@ namespace NppGist.Forms
                         }
 
                         Win32.SendMessage(PluginBase.NppData._nppHandle, (uint)NppMsg.NPPM_MENUCOMMAND, 0, NppMenuCmd.IDM_FILE_NEW);
-                        LangType langType;
                         PluginBase.SetCurrentFileText(fileContent.Remove(50));
                         PluginBase.AppendTextToCurrentFile(fileContent.Substring(50));
-                        if (file.Language != null && Lists.GistNppLangs.TryGetValue(file.Language, out langType))
+                        if (file.Language != null && Lists.GistNppLangs.TryGetValue(file.Language, out var langType))
                             Win32.SendMessage(PluginBase.NppData._nppHandle, (uint)NppMsg.NPPM_SETCURRENTLANGTYPE, 0, (int)langType);
 
                         if (clipboardText != null)
                             Clipboard.SetText(clipboardText);
                         if (cbCloseOpenDialog.Checked)
-                            CloseDialog = true;
+                            closeDialog = true;
                     }
                     else
                     {
@@ -151,15 +151,18 @@ namespace NppGist.Forms
                             {
                                 rewrite = false;
                             }
-                            else if (MessageBox.Show("Do you want to replace existing file \"" + Path.GetFileName(filename) + "\"?", string.Empty, MessageBoxButtons.YesNo)
-                                == System.Windows.Forms.DialogResult.No)
+                            else if (MessageBox.Show(
+                                         $"Do you want to replace existing file \"{Path.GetFileName(filename)}\"?", string.Empty, MessageBoxButtons.YesNo)
+                                == DialogResult.No)
                             {
-                                var dialog = new SaveFileDialog();
-                                dialog.FileName = Path.GetFileName(filename);
-                                dialog.InitialDirectory = Path.GetFullPath(gistDirectory);
+                                var dialog = new SaveFileDialog
+                                {
+                                    FileName = Path.GetFileName(filename),
+                                    InitialDirectory = Path.GetFullPath(gistDirectory)
+                                };
                                 var extension = Path.GetExtension(filename);
                                 dialog.Filter = string.IsNullOrEmpty(extension) ? "All files | *.*" : string.Format("(*{0} files) | *{0}", extension);
-                                if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                                if (dialog.ShowDialog() == DialogResult.OK)
                                     filename = dialog.FileName;
                                 else
                                     notOpenFile = true;
@@ -172,11 +175,11 @@ namespace NppGist.Forms
                                 File.WriteAllText(filename, fileContent);
                             Win32.SendMessage(PluginBase.NppData._nppHandle, (uint)NppMsg.NPPM_DOOPEN, 0, filename);
                             if (cbCloseOpenDialog.Checked)
-                                CloseDialog = true;
+                                closeDialog = true;
                         }
                     }
                 }
-                if (sender is TreeView && CloseDialog)
+                if (sender is TreeView && closeDialog)
                     Close();
             }
             catch (Exception ex)
@@ -188,19 +191,19 @@ namespace NppGist.Forms
         private void tvGists_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
-                GuiUtils.DeleteItem(tvGists, Gists, false);
+                GuiUtils.DeleteItem(tvGists, gists, false);
             else if (e.KeyCode == Keys.F2)
-                GuiUtils.RenameItem(tvGists, Gists, false);
+                GuiUtils.RenameItem(tvGists, gists, false);
         }
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            GuiUtils.DeleteItem(tvGists, Gists, false);
+            GuiUtils.DeleteItem(tvGists, gists, false);
         }
 
         private void btnRename_Click(object sender, EventArgs e)
         {
-            GuiUtils.RenameItem(tvGists, Gists, false);
+            GuiUtils.RenameItem(tvGists, gists, false);
         }
 
         private void tbGistLink_Enter(object sender, EventArgs e)
@@ -230,13 +233,13 @@ namespace NppGist.Forms
 
         private void dlgOpenGist_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (e.CloseReason == CloseReason.None && !CloseDialog)
+            if (e.CloseReason == CloseReason.None && !closeDialog)
                 e.Cancel = true;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            CloseDialog = true;
+            closeDialog = true;
         }
     }
 }

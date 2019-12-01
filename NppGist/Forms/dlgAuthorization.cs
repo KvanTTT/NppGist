@@ -8,7 +8,7 @@ namespace NppGist.Forms
 {
     public partial class dlgAuthorization : Form
     {
-        bool CloseDialog = true;
+        bool closeDialog = true;
 
         public dlgAuthorization()
         {
@@ -26,11 +26,9 @@ namespace NppGist.Forms
             User user = null;
             try
             {
-                Dictionary<string, string> responseHeaders;
-                var response = Utils.SendRequest(string.Format("{0}/user?access_token={1}", Main.ApiUrl, tbAccessToken.Text), out responseHeaders);
+                var response = Utils.SendRequest($"{Main.ApiUrl}/user?access_token={tbAccessToken.Text}", out var responseHeaders);
                 user = JsonSerializer.DeserializeFromString<User>(response);
-                string scopes;
-                if (!responseHeaders.TryGetValue("X-OAuth-Scopes", out scopes) || !scopes.Contains("gist"))
+                if (!responseHeaders.TryGetValue("X-OAuth-Scopes", out var scopes) || !scopes.Contains("gist"))
                 {
                     MessageBox.Show("Entered access token does not contains gist scopes");
                     error = true;
@@ -48,20 +46,20 @@ namespace NppGist.Forms
                 Main.Token = tbAccessToken.Text;
                 Win32.WritePrivateProfileString("Settings", "Login", Main.Login, Main.IniFileName);
                 Win32.WritePrivateProfileString("Settings", "AccessToken", AccessToken.EncryptToken(Main.Token), Main.IniFileName);
-                CloseDialog = true;
+                closeDialog = true;
             }
             else
-                CloseDialog = false;
+                closeDialog = false;
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            CloseDialog = true;
+            closeDialog = true;
         }
 
         private void frmAuthorization_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (e.CloseReason == CloseReason.None && !CloseDialog)
+            if (e.CloseReason == CloseReason.None && !closeDialog)
                 e.Cancel = true;
         }
     }

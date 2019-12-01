@@ -10,17 +10,17 @@ using System.Windows.Forms;
 
 namespace NppGist
 {
-    class Main : PluginMain
+    internal class Main : PluginMain
     {
         internal const string ApiUrl = "https://api.github.com";
         internal const string GistUrl = "https://gist.github.com";
-        internal static string IniFileName = null;
-        internal static string Token = null;
-        internal static string Login = null;
-        internal static bool SaveLocally = false;
+        internal static string IniFileName;
+        internal static string Token;
+        internal static string Login;
+        internal static bool SaveLocally;
         internal static bool CloseSaveDialog = true;
         internal static bool CloseOpenDialog = true;
-        internal const string pluginName = "NppGist";
+        private const string pluginName = "NppGist";
 
         static Bitmap tbLoad = Properties.Resources.download;
         static Bitmap tbSave = Properties.Resources.upload;
@@ -90,13 +90,13 @@ namespace NppGist
             Marshal.FreeHGlobal(pTbIcons);
         }
 
-        internal static void EnterAccessTokenCommand()
+        private static void EnterAccessTokenCommand()
         {
             var authForm = new dlgAuthorization();
             authForm.ShowDialog();
         }
 
-        internal static void OpenGistCommand()
+        private static void OpenGistCommand()
         {
             if (!string.IsNullOrEmpty(Token) || (new dlgAuthorization()).ShowDialog() == DialogResult.OK)
             {
@@ -105,7 +105,7 @@ namespace NppGist
             }
         }
 
-        internal static void SaveGistCommand()
+        private static void SaveGistCommand()
         {
             if (!string.IsNullOrEmpty(Token) || (new dlgAuthorization()).ShowDialog() == DialogResult.OK)
             {
@@ -114,7 +114,7 @@ namespace NppGist
             }
         }
 
-        internal static void AboutCommand()
+        private static void AboutCommand()
         {
             var frmAbout = new frmAbout();
             frmAbout.ShowDialog();
@@ -122,7 +122,7 @@ namespace NppGist
 
         private static Assembly ResolveEventHandler(object sender, ResolveEventArgs args)
         {
-            string resource = string.Format("{0}.{1}.dll", pluginName, args.Name.Remove(args.Name.IndexOf(',')));
+            string resource = $"{pluginName}.{args.Name.Remove(args.Name.IndexOf(','))}.dll";
             Assembly currentAssembly = Assembly.GetExecutingAssembly();
 
             using (Stream stream = currentAssembly.GetManifestResourceStream(resource))

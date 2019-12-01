@@ -9,7 +9,7 @@ namespace NppGist
     {
         public static char[] InvalidFilenameCharacters = Path.GetInvalidFileNameChars();
 
-        public static char[] ControlChars = new char[] {
+        public static char[] ControlChars = new[] {
             (char)1, // Ctrl + A
             (char)3, // Ctrl + C
             (char)22, // Ctrl + V
@@ -17,7 +17,7 @@ namespace NppGist
             (char)Keys.Back // Backspace
         };
 
-        public static Dictionary<string, LangType> GistNppLangs = new Dictionary<string, LangType>()
+        public static Dictionary<string, LangType> GistNppLangs = new Dictionary<string, LangType>
         {
             { "Text", LangType.L_TEXT },
             { "PHP", LangType.L_PHP },
@@ -91,7 +91,7 @@ namespace NppGist
             { "CoffeeScript", LangType.L_EXTERNAL },
         };
 
-        public static List<string> GistLangs = new List<string>()
+        public static List<string> GistLangs = new List<string>
         {
             "Text",
             "ActionScript",

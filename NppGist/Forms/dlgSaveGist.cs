@@ -13,9 +13,9 @@ namespace NppGist.Forms
 {
     public partial class dlgSaveGist : Form
     {
-        Dictionary<string, Gist> Gists;
-        System.Threading.Timer DetectExtensionTimer;
-        bool CloseDialog;
+        Dictionary<string, Gist> gists;
+        readonly System.Threading.Timer detectExtensionTimer;
+        bool closeDialog;
 
         public dlgSaveGist()
         {
@@ -33,7 +33,7 @@ namespace NppGist.Forms
                 cmbLanguage.SelectedItem = Lists.GistLangs[0];
             cbCloseDialog.Checked = Main.CloseSaveDialog;
 
-            DetectExtensionTimer = new System.Threading.Timer(_ => GuiUtils.UpdateExtenstionResult(cmbLanguage, tbGistName), null, 0, Timeout.Infinite);
+            detectExtensionTimer = new System.Threading.Timer(_ => GuiUtils.UpdateExtenstionResult(cmbLanguage, tbGistName), null, 0, Timeout.Infinite);
 
             toolTip.SetToolTip(btnGoToGitHub, "Open Gist in Browser");
             toolTip.SetToolTip(btnUpdate, "Update Gists");
@@ -59,7 +59,7 @@ namespace NppGist.Forms
                     tvGists.SelectedNode = null;
                     bool nodeFound = false;
                     var shortFileName = Path.GetFileName(currentFileName);
-                    foreach (var keyGist in Gists)
+                    foreach (var keyGist in gists)
                     {
                         var gist = keyGist.Value;
                         if (gist.Files.Count == 1 && gist.Files.First().Key.StartsWith("gistfile"))
@@ -107,7 +107,7 @@ namespace NppGist.Forms
         {
             try
             {
-                CloseDialog = false;
+                closeDialog = false;
                 if (tvGists.SelectedNode != null)
                 {
                     if (tvGists.SelectedNode.Name == GuiUtils.AllGistsKey)
@@ -115,10 +115,10 @@ namespace NppGist.Forms
                         // Creating new gist
                         var createdGist = CreateGist();
                         if (cbCloseDialog.Checked)
-                            CloseDialog = true;
+                            closeDialog = true;
                         else
                         {
-                            GuiUtils.RebuildTreeView(tvGists, Gists, true);
+                            GuiUtils.RebuildTreeView(tvGists, gists, true);
                             SelectFileInGist(createdGist, "");
                         }
                     }
@@ -126,7 +126,7 @@ namespace NppGist.Forms
                     {
                         // Updating existing gist
                         var strs = tvGists.SelectedNode.Name.Split('/');
-                        var gist = Gists[strs[0]];
+                        var gist = gists[strs[0]];
                         var file = gist.Files[strs[1]];
                         var gistName = GuiUtils.GetGistName(gist);
 
@@ -136,8 +136,8 @@ namespace NppGist.Forms
                             bool createGistFile = false;
                             if (file.Filename == tbGistName.Text)
                             {
-                                if (MessageBox.Show(string.Format("Do you want to update gist \"{0}\"?", gistName),
-                                    string.Empty, MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                                if (MessageBox.Show($"Do you want to update gist \"{gistName}\"?",
+                                    string.Empty, MessageBoxButtons.YesNo) == DialogResult.Yes)
                                 {
                                     updateGistFile = true;
                                 }
@@ -149,10 +149,10 @@ namespace NppGist.Forms
                             {
                                 var updatedGist = UpdateOrCreateFileInGist(gist);
                                 if (cbCloseDialog.Checked)
-                                    CloseDialog = true;
+                                    closeDialog = true;
                                 else
                                 {
-                                    GuiUtils.RebuildTreeView(tvGists, Gists, true);
+                                    GuiUtils.RebuildTreeView(tvGists, gists, true);
                                     SelectFileInGist(updatedGist, tbGistName.Text);
                                 }
                             }
@@ -164,19 +164,18 @@ namespace NppGist.Forms
                             bool renameGistFile = false;
                             if (file.Filename == tbGistName.Text)
                             {
-                                if (MessageBox.Show(string.Format(
-                                    "Do you want to update file \"{0}\" from gist \"{1}\"?", file.Filename, gistName),
-                                    string.Empty, MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                                if (MessageBox.Show(
+                                        $"Do you want to update file \"{file.Filename}\" from gist \"{gistName}\"?",
+                                    string.Empty, MessageBoxButtons.YesNo) == DialogResult.Yes)
                                 {
                                     updateGistFile = true;
                                 }
                             }
                             else
                             {
-                                if (MessageBox.Show(string.Format(
-                                    "Do you want to update and rename file \"{0}\" to \"{1}\" from gist \"{2}\"?",
-                                    file.Filename, tbGistName.Text, gistName),
-                                    string.Empty, MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.Yes)
+                                if (MessageBox.Show(
+                                        $"Do you want to update and rename file \"{file.Filename}\" to \"{tbGistName.Text}\" from gist \"{gistName}\"?",
+                                    string.Empty, MessageBoxButtons.YesNo) == DialogResult.Yes)
                                 {
                                     renameGistFile = true;
                                 }
@@ -186,10 +185,10 @@ namespace NppGist.Forms
                             {
                                 var updatedGist = UpdateOrCreateFileInGist(gist);
                                 if (cbCloseDialog.Checked)
-                                    CloseDialog = true;
+                                    closeDialog = true;
                                 else
                                 {
-                                    GuiUtils.RebuildTreeView(tvGists, Gists, true);
+                                    GuiUtils.RebuildTreeView(tvGists, gists, true);
                                     SelectFileInGist(updatedGist, tbGistName.Text);
                                 }
                             }
@@ -197,17 +196,17 @@ namespace NppGist.Forms
                             {
                                 var updatedGist = RenameFileInGist(gist, file);
                                 if (cbCloseDialog.Checked)
-                                    CloseDialog = true;
+                                    closeDialog = true;
                                 else
                                 {
-                                    GuiUtils.RebuildTreeView(tvGists, Gists, true);
+                                    GuiUtils.RebuildTreeView(tvGists, gists, true);
                                     SelectFileInGist(updatedGist, tbGistName.Text);
                                 }
                             }
                         }
                     }
                 }
-                if (sender is TreeView && CloseDialog)
+                if (sender is TreeView && closeDialog)
                     Close();
             }
             catch (Exception ex)
@@ -222,16 +221,16 @@ namespace NppGist.Forms
             var creatingGist = new UpdatedGist();
             creatingGist.Description = tbDescription.Text;
             creatingGist.Public = cbPublic.Checked;
-            creatingGist.Files = new Dictionary<string, UpdatedFile>()
+            creatingGist.Files = new Dictionary<string, UpdatedFile>
             {
                 { tbGistName.Text, new UpdatedFile { Content = fileContent }}
             };
-            var bytes = Encoding.UTF8.GetBytes(JsonSerializer.SerializeToString<UpdatedGist>(creatingGist));
+            var bytes = Encoding.UTF8.GetBytes(JsonSerializer.SerializeToString(creatingGist));
 
-            var gist = Utils.SendJsonRequest<Gist>(string.Format("{0}/gists?access_token={1}", Main.ApiUrl, Main.Token),
+            var gist = Utils.SendJsonRequest<Gist>($"{Main.ApiUrl}/gists?access_token={Main.Token}",
                 WebRequestMethod.Post, null, bytes);
-            Gists.Add(gist.Id, gist);
-            Gists = Gists.OrderByDescending(g => g.Value.CreatedAt).ToDictionary(g => g.Key, g => g.Value);
+            gists.Add(gist.Id, gist);
+            gists = gists.OrderByDescending(g => g.Value.CreatedAt).ToDictionary(g => g.Key, g => g.Value);
             return gist;
         }
 
@@ -241,15 +240,15 @@ namespace NppGist.Forms
             var editingGist = new UpdatedGist();
             if (gist.Description != tbDescription.Text)
                 editingGist.Description = tbDescription.Text;
-            editingGist.Files = new Dictionary<string, UpdatedFile>()
+            editingGist.Files = new Dictionary<string, UpdatedFile>
             {
                 { tbGistName.Text, new UpdatedFile { Content = fileContent }}
             };
-            var bytes = Encoding.UTF8.GetBytes(JsonSerializer.SerializeToString<UpdatedGist>(editingGist));
+            var bytes = Encoding.UTF8.GetBytes(JsonSerializer.SerializeToString(editingGist));
 
-            var responseGist = Utils.SendJsonRequest<Gist>(string.Format("{0}/gists/{1}?access_token={2}", Main.ApiUrl, gist.Id, Main.Token),
+            var responseGist = Utils.SendJsonRequest<Gist>($"{Main.ApiUrl}/gists/{gist.Id}?access_token={Main.Token}",
                 WebRequestMethod.Patch, null, bytes);
-            Gists[gist.Id] = responseGist;
+            gists[gist.Id] = responseGist;
             return responseGist;
         }
 
@@ -259,15 +258,15 @@ namespace NppGist.Forms
             var editingGist = new UpdatedGist();
             if (gist.Description != tbDescription.Text)
                 editingGist.Description = tbDescription.Text;
-            editingGist.Files = new Dictionary<string, UpdatedFile>()
+            editingGist.Files = new Dictionary<string, UpdatedFile>
             {
                 { file.Filename, new UpdatedFile { Filename = tbGistName.Text, Content = fileContent }}
             };
-            var bytes = Encoding.UTF8.GetBytes(JsonSerializer.SerializeToString<UpdatedGist>(editingGist));
+            var bytes = Encoding.UTF8.GetBytes(JsonSerializer.SerializeToString(editingGist));
 
-            var responseGist = Utils.SendJsonRequest<Gist>(string.Format("{0}/gists/{1}?access_token={2}", Main.ApiUrl, gist.Id, Main.Token),
+            var responseGist = Utils.SendJsonRequest<Gist>($"{Main.ApiUrl}/gists/{gist.Id}?access_token={Main.Token}",
                 WebRequestMethod.Patch, null, bytes);
-            Gists[gist.Id] = responseGist;
+            gists[gist.Id] = responseGist;
             return responseGist;
         }
 
@@ -275,7 +274,7 @@ namespace NppGist.Forms
         {
             var node = tvGists.Nodes.Find(gist.Id + "/" +
                 (!string.IsNullOrEmpty(tbGistName.Text) ? tbGistName.Text : gist.Files.First().Key), true);
-            if (node != null && node.Length > 0)
+            if (node.Length > 0)
             {
                 BeginInvoke((Action)delegate
                 {
@@ -295,9 +294,9 @@ namespace NppGist.Forms
         {
             try
             {
-                var gists = Utils.SendJsonRequest<List<Gist>>(string.Format("{0}/gists?access_token={1}", Main.ApiUrl, Main.Token));
-                Gists = gists.ToDictionary(gist => gist.Id);
-                GuiUtils.RebuildTreeView(tvGists, Gists, true);
+                var gists = Utils.SendJsonRequest<List<Gist>>($"{Main.ApiUrl}/gists?access_token={Main.Token}");
+                this.gists = gists.ToDictionary(gist => gist.Id);
+                GuiUtils.RebuildTreeView(tvGists, this.gists, true);
 
                 return true;
             }
@@ -311,12 +310,12 @@ namespace NppGist.Forms
 
         private void btnDelete_Click(object sender, EventArgs e)
         {
-            GuiUtils.DeleteItem(tvGists, Gists, true);
+            GuiUtils.DeleteItem(tvGists, gists, true);
         }
 
         private void btnRename_Click(object sender, EventArgs e)
         {
-            GuiUtils.RenameItem(tvGists, Gists, true);
+            GuiUtils.RenameItem(tvGists, gists, true);
         }
 
         private void tvGists_AfterSelect(object sender, TreeViewEventArgs e)
@@ -336,7 +335,7 @@ namespace NppGist.Forms
                 else
                 {
                     var strs = tvGists.SelectedNode.Name.Split('/');
-                    var gist = Gists[strs[0]];
+                    var gist = gists[strs[0]];
                     var file = gist.Files[strs[1]];
                     if (gist.Files.Count == 1 || tvGists.SelectedNode.Parent.Name != GuiUtils.AllGistsKey)
                     {
@@ -392,25 +391,25 @@ namespace NppGist.Forms
 
         private void btnCancel_Click(object sender, EventArgs e)
         {
-            CloseDialog = true;
+            closeDialog = true;
         }
 
         private void tvGists_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
-                GuiUtils.DeleteItem(tvGists, Gists, true);
+                GuiUtils.DeleteItem(tvGists, gists, true);
             else if (e.KeyCode == Keys.F2)
-                GuiUtils.RenameItem(tvGists, Gists, true);
+                GuiUtils.RenameItem(tvGists, gists, true);
         }
 
         private void tbGistName_TextChanged(object sender, EventArgs e)
         {
-            DetectExtensionTimer.Change(200, Timeout.Infinite);
+            detectExtensionTimer.Change(200, Timeout.Infinite);
         }
 
         private void frmSaveGist_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (e.CloseReason == CloseReason.None && !CloseDialog)
+            if (e.CloseReason == CloseReason.None && !closeDialog)
                 e.Cancel = true;
         }
 

@@ -33,7 +33,7 @@ namespace NppGist.Tests
             {
                 Description = "the description for this gist",
                 Public = true,
-                Files = new Dictionary<string, UpdatedFile>()
+                Files = new Dictionary<string, UpdatedFile>
                 {
                     { "file1.txt", new UpdatedFile { Content = "String file contents" } }
                 }
