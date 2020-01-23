@@ -66,6 +66,8 @@ namespace NppGist
             SaveLocally = Convert.ToBoolean(Win32.GetPrivateProfileInt("Settings", "SaveToLocal", 1, IniFileName));
             CloseSaveDialog = Convert.ToBoolean(Win32.GetPrivateProfileInt("Settings", "CloseSaveDialog", 1, IniFileName));
             CloseOpenDialog = Convert.ToBoolean(Win32.GetPrivateProfileInt("Settings", "CloseOpenDialog", 1, IniFileName));
+            GuiUtils.SecretGistColor = Color.FromArgb(Win32.GetPrivateProfileInt("Settings", "SecretGistBackgroundColor", GuiUtils.SecretGistColor.ToArgb(), IniFileName));
+            GuiUtils.SecretGistForeColor = Color.FromArgb(Win32.GetPrivateProfileInt("Settings", "SecretGistForegroundColor", GuiUtils.SecretGistForeColor.ToArgb(), IniFileName));
 
             PluginBase.SetCommand(TokenCommandId, "Access Token", EnterAccessTokenCommand);
             PluginBase.SetCommand(OpenCommandId, "Open Gist", OpenGistCommand, new ShortcutKey(false, false, false, Keys.None));
