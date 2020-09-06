@@ -1,13 +1,12 @@
 ﻿using NppNetInf;
-using ServiceStack.Text;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
+using System.Net.Http;
 using System.Threading;
 using System.Windows.Forms;
+using NppGist.JsonMapping;
 
 namespace NppGist.Forms
 {
@@ -27,10 +26,7 @@ namespace NppGist.Forms
             LangType langType = LangType.L_TEXT;
             Win32.SendMessage(PluginBase.NppData._nppHandle, (uint) NppMsg.NPPM_GETCURRENTLANGTYPE, 0, ref langType);
             var gistNppLang = Lists.GistNppLangs.FirstOrDefault(lang => lang.Value == langType);
-            if (gistNppLang.Key != null)
-                cmbLanguage.SelectedItem = gistNppLang.Key;
-            else
-                cmbLanguage.SelectedItem = Lists.GistLangs[0];
+            cmbLanguage.SelectedItem = gistNppLang.Key ?? Lists.GistLangs[0];
             cbCloseDialog.Checked = Main.CloseSaveDialog;
 
             detectExtensionTimer = new System.Threading.Timer(_ => GuiUtils.UpdateExtenstionResult(cmbLanguage, tbGistName), null, 0, Timeout.Infinite);
@@ -115,7 +111,9 @@ namespace NppGist.Forms
                         // Creating new gist
                         var createdGist = CreateGist();
                         if (cbCloseDialog.Checked)
+                        {
                             closeDialog = true;
+                        }
                         else
                         {
                             GuiUtils.RebuildTreeView(tvGists, gists, true);
@@ -218,19 +216,19 @@ namespace NppGist.Forms
         private Gist CreateGist()
         {
             var fileContent = PluginBase.GetCurrentFileText();
-            var creatingGist = new UpdatedGist();
-            creatingGist.Description = tbDescription.Text;
-            creatingGist.Public = cbPublic.Checked;
-            creatingGist.Files = new Dictionary<string, UpdatedFile>
+            var creatingGist = new UpdatedGist
             {
-                { tbGistName.Text, new UpdatedFile { Content = fileContent }}
+                Description = tbDescription.Text,
+                Public = cbPublic.Checked,
+                Files = new Dictionary<string, UpdatedFile>
+                {
+                    {tbGistName.Text, new UpdatedFile {Content = fileContent}}
+                }
             };
-            var bytes = Encoding.UTF8.GetBytes(JsonSerializer.SerializeToString(creatingGist));
-
-            var gist = Utils.SendJsonRequest<Gist>($"{Main.ApiUrl}/gists?access_token={Main.Token}",
-                WebRequestMethod.Post, null, bytes);
+            var gist = Utils.SendJsonRequest<Gist>($"gists", Main.Token, HttpMethod.Post, creatingGist);
             gists.Add(gist.Id, gist);
-            gists = gists.OrderByDescending(g => g.Value.CreatedAt).ToDictionary(g => g.Key, g => g.Value);
+            gists = gists.OrderByDescending(g => g.Value.CreatedAt)
+                .ToDictionary(g => g.Key, g => g.Value);
             return gist;
         }
 
@@ -244,10 +242,7 @@ namespace NppGist.Forms
             {
                 { tbGistName.Text, new UpdatedFile { Content = fileContent }}
             };
-            var bytes = Encoding.UTF8.GetBytes(JsonSerializer.SerializeToString(editingGist));
-
-            var responseGist = Utils.SendJsonRequest<Gist>($"{Main.ApiUrl}/gists/{gist.Id}?access_token={Main.Token}",
-                WebRequestMethod.Patch, null, bytes);
+            var responseGist = Utils.SendJsonRequest<Gist>($"gists/{gist.Id}", Main.Token, Utils.PatchHttpMethod, editingGist);
             gists[gist.Id] = responseGist;
             return responseGist;
         }
@@ -262,10 +257,8 @@ namespace NppGist.Forms
             {
                 { file.Filename, new UpdatedFile { Filename = tbGistName.Text, Content = fileContent }}
             };
-            var bytes = Encoding.UTF8.GetBytes(JsonSerializer.SerializeToString(editingGist));
-
-            var responseGist = Utils.SendJsonRequest<Gist>($"{Main.ApiUrl}/gists/{gist.Id}?access_token={Main.Token}",
-                WebRequestMethod.Patch, null, bytes);
+            var responseGist = Utils.SendJsonRequest<Gist>($"gists/{gist.Id}", Main.Token,
+                Utils.PatchHttpMethod, editingGist);
             gists[gist.Id] = responseGist;
             return responseGist;
         }
@@ -294,7 +287,7 @@ namespace NppGist.Forms
         {
             try
             {
-                var gists = Utils.SendJsonRequest<List<Gist>>($"{Main.ApiUrl}/gists?access_token={Main.Token}");
+                var gists = Utils.SendJsonRequest<List<Gist>>("gists", Main.Token);
                 this.gists = gists.ToDictionary(gist => gist.Id);
                 GuiUtils.RebuildTreeView(tvGists, this.gists, true);
 
@@ -424,7 +417,8 @@ namespace NppGist.Forms
         private void cbCloseDialog_CheckedChanged(object sender, EventArgs e)
         {
             Main.CloseSaveDialog = cbCloseDialog.Checked;
-            Win32.WritePrivateProfileString("Settings", "CloseSaveDialog", (Convert.ToInt32(Main.CloseSaveDialog)).ToString(), Main.IniFileName);
+            Win32.WritePrivateProfileString("Settings", "CloseSaveDialog",
+                Convert.ToInt32(Main.CloseSaveDialog).ToString(), Main.IniFileName);
         }
 
         private void btnGoToGitHub_Click(object sender, EventArgs e)

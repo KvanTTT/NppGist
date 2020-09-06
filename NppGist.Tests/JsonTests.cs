@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using ServiceStack.Text;
 using System.Collections.Generic;
+using NppGist.JsonMapping;
 
 namespace NppGist.Tests
 {

@@ -1,11 +1,12 @@
-﻿using ServiceStack.Text;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Windows.Forms;
+using NppGist.JsonMapping;
 
 namespace NppGist.Forms
 {
@@ -31,7 +32,7 @@ namespace NppGist.Forms
                         if ((result = MessageBox.Show($"Do you want to delete gist \"{file.Filename}\"?", string.Empty, MessageBoxButtons.YesNo))
                             == DialogResult.Yes)
                         {
-                            Utils.SendRequest($"{Main.ApiUrl}/gists/{gist.Id}?access_token={Main.Token}", WebRequestMethod.Delete);
+                            Utils.SendRequest($"gists/{gist.Id}", Main.Token, HttpMethod.Delete);
                             gists.Remove(gist.Id);
                             RebuildTreeView(treeView, gists, showRoot);
                         }
@@ -41,10 +42,12 @@ namespace NppGist.Forms
                         if ((result = MessageBox.Show(
                                 $"Do you want to delete file \"{file.Filename}\" from gist \"{gist.Files.First().Value.Filename}\"?", string.Empty, MessageBoxButtons.YesNo)) == DialogResult.Yes)
                         {
-                            string body = $"{{\"files\":{{\"{file.Filename}\":null}}}}";
-                            var responseGist = Utils.SendJsonRequest<Gist>(
-                                $"{Main.ApiUrl}/gists/{gist.Id}?access_token={Main.Token}",
-                                WebRequestMethod.Patch, null, Encoding.UTF8.GetBytes(body));
+                            var deletedFile = new DeletedFile
+                            {
+                                Files = new Dictionary<string, string> {{file.Filename, null}}
+                            };
+                            var responseGist = Utils.SendJsonRequest<Gist>($"gists/{gist.Id}", Main.Token,
+                                Utils.PatchHttpMethod, deletedFile);
                             gists[gist.Id] = responseGist;
                             RebuildTreeView(treeView, gists, showRoot);
                         }
@@ -52,7 +55,7 @@ namespace NppGist.Forms
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Unable to delete gist or file." + Environment.NewLine + "Error message: " + ex.Message);
+                    MessageBox.Show($"Unable to delete gist or file.{Environment.NewLine}Error message: {ex.Message}");
                 }
             }
             return result;
@@ -101,13 +104,12 @@ namespace NppGist.Forms
                                         }
                                     }
                                 };
-                                var bytes = Encoding.UTF8.GetBytes(JsonSerializer.SerializeToString(renamingGist));
 
                                 try
                                 {
                                     var responseGist = Utils.SendJsonRequest<Gist>(
-                                        $"{Main.ApiUrl}/gists/{gist.Id}?access_token={Main.Token}",
-                                        WebRequestMethod.Patch, null, bytes);
+                                        $"gists/{gist.Id}", Main.Token,
+                                        Utils.PatchHttpMethod, renamingGist);
                                     gists[gist.Id] = responseGist;
                                     RebuildTreeView(treeView, gists, showRoot);
                                 }
@@ -205,16 +207,23 @@ namespace NppGist.Forms
 
         public static void UpdateExtenstionResult(ComboBox cmbLanguage, TextBox tbFilename)
         {
-            if (tbFilename.Text == "")
+            if (cmbLanguage.IsHandleCreated)
             {
-                cmbLanguage.Enabled = true;
-                cmbLanguage.SelectedItem = Lists.GistLangs[0];
-            }
-            else
-            {
-                cmbLanguage.Enabled = false;
-                //languages/detect? is no longer supported by api. See here https://developer.github.com/v3/gists/
-                cmbLanguage.SelectedItem = "none";
+                cmbLanguage.Invoke(new Action(() =>
+                    {
+                        if (tbFilename.Text == "")
+                        {
+                            cmbLanguage.Enabled = true;
+                            cmbLanguage.SelectedItem = Lists.GistLangs[0];
+                        }
+                        else
+                        {
+                            cmbLanguage.Enabled = false;
+                            //languages/detect? is no longer supported by api. See here https://developer.github.com/v3/gists/
+                            cmbLanguage.SelectedItem = "none";
+                        }
+                    }
+                ));
             }
         }
 

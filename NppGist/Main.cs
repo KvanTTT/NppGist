@@ -12,7 +12,7 @@ namespace NppGist
 {
     internal class Main : PluginMain
     {
-        internal const string ApiUrl = "https://api.github.com";
+        internal const string ApiUrl = "https://api.github.com/";
         internal const string GistUrl = "https://gist.github.com";
         internal static string IniFileName;
         internal static string Token;

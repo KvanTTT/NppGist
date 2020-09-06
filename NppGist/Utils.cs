@@ -1,94 +1,73 @@
 ﻿using ServiceStack.Text;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
+using System.Threading.Tasks;
+using NppGist.JsonMapping;
 
 namespace NppGist
 {
     public class Utils
     {
+        public static readonly HttpMethod PatchHttpMethod = new HttpMethod("PATCH");
+
         static Utils()
         {
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            JsConfig.IncludeNullValuesInDictionaries = true;
         }
 
-        public static string SendRequest(string url, WebRequestMethod method = WebRequestMethod.Get,
-            Dictionary<string, string> headers = null, byte[] body = null, string contentType = "", int timeout = 5000)
+        public static string SendRequest(string url, string token = null, HttpMethod method = null,
+            JsonGistObject obj = null, int timeout = 5000)
+            => SendRequestAsync(url, token, method, obj, timeout).Result;
+
+        public static T SendJsonRequest<T>(string url, string token = null, HttpMethod method = null,
+            JsonGistObject obj = null, int timeout = 5000)
+            => SendJsonRequestAsync<T>(url, token, method, obj, timeout).Result;
+
+        public static async Task<string> SendRequestAsync(string url, string token = null, HttpMethod method = null,
+            JsonGistObject obj = null, int timeout = 5000)
         {
-            return SendRequest(url, out _, method, headers, body, contentType, timeout);
+            var response = await MakeRequest(url, token, method, obj, timeout).ConfigureAwait(false);
+            return await response.Content.ReadAsStringAsync();
         }
 
-        public static T SendJsonRequest<T>(string url, WebRequestMethod method = WebRequestMethod.Get,
-            Dictionary<string, string> headers = null, byte[] body = null, string contentType = "", int timeout = 5000)
+        public static async Task<T> SendJsonRequestAsync<T>(string url, string token = null, HttpMethod method = null,
+            JsonGistObject obj = null, int timeout = 5000)
         {
-            return SendJsonRequest<T>(url, out _, method, headers, body, contentType, timeout);
+            var response = await MakeRequest(url, token, method, obj, timeout).ConfigureAwait(false);
+            var result = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            return JsonSerializer.DeserializeFromStream<T>(result);
         }
 
-        public static string SendRequest(string url, out Dictionary<string, string> responseHeaders,
-            WebRequestMethod method = WebRequestMethod.Get,
-            Dictionary<string, string> headers = null, byte[] body = null, string contentType = "", int timeout = 5000)
+        public static Task<HttpResponseMessage> MakeRequest(string url, string token = null, HttpMethod method = null,
+            JsonGistObject obj = null, int timeout = 5000)
         {
-            var request = MakeRequest(url, method, headers, body, contentType, timeout);
+            HttpRequestMessage requestMessage = new HttpRequestMessage(method ?? HttpMethod.Get, url);
 
-            string responseString;
-            responseHeaders = new Dictionary<string, string>();
-            using (var response = request.GetResponse())
+            if ((method == HttpMethod.Post || method?.Method == PatchHttpMethod.Method) && obj != null)
             {
-                var stream = response.GetResponseStream();
-                var reader = new StreamReader(stream);
-                responseString = reader.ReadToEnd();
-                foreach (var header in response.Headers)
-                {
-                    var key = (string)header;
-                    responseHeaders.Add(key, response.Headers[key]);
-                }
+                var str = JsonSerializer.SerializeToString(obj);
+                requestMessage.Content = new StringContent(str);
             }
 
-            return responseString;
-        }
-
-        public static T SendJsonRequest<T>(string url, out Dictionary<string, string> responseHeaders,
-            WebRequestMethod method = WebRequestMethod.Get,
-            Dictionary<string, string> headers = null, byte[] body = null, string contentType = "", int timeout = 5000)
-        {
-            var request = MakeRequest(url, method, headers, body, contentType, timeout);
-
-            T result;
-            responseHeaders = new Dictionary<string, string>();
-            using (var response = request.GetResponse())
+            var client = new HttpClient
             {
-                result = JsonSerializer.DeserializeResponse<T>(response);
-                foreach (var header in response.Headers)
-                {
-                    var key = (string)header;
-                    responseHeaders.Add(key, response.Headers[key]);
-                }
+                BaseAddress = new Uri(Main.ApiUrl),
+                Timeout = TimeSpan.FromMilliseconds(timeout)
+            };
+            var headers = client.DefaultRequestHeaders;
+            headers.UserAgent.Add(new ProductInfoHeaderValue("NppGist", "1.0"));
+            headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                headers.Authorization = new AuthenticationHeaderValue("Token", token);
             }
 
-            return result;
-        }
-
-        private static HttpWebRequest MakeRequest(string url, WebRequestMethod method = WebRequestMethod.Get,
-            Dictionary<string, string> headers = null, byte[] body = null, string contentType = "", int timeout = 5000)
-        {
-            var request = (HttpWebRequest)WebRequest.Create(url);
-            request.Method = method.ToString().ToUpperInvariant();
-            request.ContentType = contentType;
-            request.UserAgent = "NppGist";
-            request.Timeout = timeout;
-            if (headers != null)
-                foreach (var header in headers)
-                    request.Headers.Add(header.Key, header.Value);
-            if ((method == WebRequestMethod.Post || method == WebRequestMethod.Patch) && body != null)
-            {
-                request.ContentType = contentType;
-                request.ContentLength = body.Length;
-                using (var stream = request.GetRequestStream())
-                    stream.Write(body, 0, body.Length);
-            }
-            return request;
+            return client.SendAsync(requestMessage);
         }
 
         public static string GetSafeFilename(string filename)

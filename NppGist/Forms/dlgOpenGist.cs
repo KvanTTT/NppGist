@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using NppGist.JsonMapping;
 
 namespace NppGist.Forms
 {
@@ -32,7 +33,7 @@ namespace NppGist.Forms
         {
             try
             {
-                var gists = Utils.SendJsonRequest<List<Gist>>($"{Main.ApiUrl}/gists?access_token={Main.Token}");
+                var gists = Utils.SendJsonRequest<List<Gist>>("gists", Main.Token);
                 this.gists = gists.ToDictionary(gist => gist.Id);
                 GuiUtils.RebuildTreeView(tvGists, this.gists, false);
             }

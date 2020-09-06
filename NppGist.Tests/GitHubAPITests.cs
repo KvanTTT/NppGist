@@ -1,6 +1,7 @@
 ﻿using NUnit.Framework;
 using ServiceStack.Text;
 using System.Collections.Generic;
+using NppGist.JsonMapping;
 
 namespace NppGist.Tests
 {
@@ -10,7 +11,7 @@ namespace NppGist.Tests
         [Test]
         public void GetUser()
         {
-            var response = Utils.SendRequest("https://api.github.com/users/KvanTTT", out var responseHeaders);
+            var response = Utils.SendRequest("https://api.github.com/users/KvanTTT");
             var user = JsonSerializer.DeserializeFromString<User>(response);
         }
 

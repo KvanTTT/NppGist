@@ -1,8 +1,9 @@
 ﻿using NppNetInf;
 using ServiceStack.Text;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
+using NppGist.JsonMapping;
 
 namespace NppGist.Forms
 {
@@ -26,11 +27,15 @@ namespace NppGist.Forms
             User user = null;
             try
             {
-                var response = Utils.SendRequest($"{Main.ApiUrl}/user?access_token={tbAccessToken.Text}", out var responseHeaders);
-                user = JsonSerializer.DeserializeFromString<User>(response);
-                if (!responseHeaders.TryGetValue("X-OAuth-Scopes", out var scopes) || !scopes.Contains("gist"))
+                var response = Utils.MakeRequest("user", tbAccessToken.Text.Trim()).Result;
+                user = JsonSerializer.DeserializeFromStream<User>(response.Content.ReadAsStreamAsync().Result);
+
+                bool containsGistScope = response.Headers.Any(header => header.Key == "X-OAuth-Scopes" &&
+                                                                      header.Value.Any(value => value.Contains("gist")));
+
+                if (!containsGistScope)
                 {
-                    MessageBox.Show("Entered access token does not contains gist scopes");
+                    MessageBox.Show("Entered access token does not contain gist scopes");
                     error = true;
                 }
             }
