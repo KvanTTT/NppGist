@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace NppGist
+namespace NppGist.JsonMapping
 {
-    [DataContract]
-    public class UpdatedGist
+    public class UpdatedGist : JsonGistObject
     {
         [DataMember(Name = "description", IsRequired = false, EmitDefaultValue = false)]
         public string Description { get; set; }

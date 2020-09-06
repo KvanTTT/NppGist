@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace NppGist
+namespace NppGist.JsonMapping
 {
-    [DataContract]
-    public class User
+    public class User : JsonGistObject
     {
         [DataMember(Name = "login")]
         public string Login { get; set; }

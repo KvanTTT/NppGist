@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace NppGist
+namespace NppGist.JsonMapping
 {
-    [DataContract]
-    public class Gist
+    public class Gist : JsonGistObject
     {
         [DataMember(Name = "url")]
         public string Url { get; set; }

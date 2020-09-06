@@ -192,7 +192,7 @@
     <Compile Include="Forms\GuiUtils.cs" />
     <Compile Include="JsonMapping\ClientError.cs" />
     <Compile Include="JsonMapping\DeletedFile.cs" />
-    <Compile Include="JsonMapping\JsonObject.cs" />
+    <Compile Include="JsonMapping\JsonGistObject.cs" />
     <Compile Include="JsonMapping\UpdatedFile.cs" />
     <Compile Include="JsonMapping\UpdatedGist.cs" />
     <Compile Include="JsonMapping\GistFile.cs" />

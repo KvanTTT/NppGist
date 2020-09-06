@@ -1,9 +1,8 @@
 ﻿using System.Runtime.Serialization;
 
-namespace NppGist
+namespace NppGist.JsonMapping
 {
-    [DataContract]
-    public class UpdatedFile
+    public class UpdatedFile : JsonGistObject
     {
         [DataMember(Name = "filename", IsRequired = false, EmitDefaultValue = false)]
         public string Filename { get; set; }

@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace NppGist
+namespace NppGist.JsonMapping
 {
-    [DataContract]
-    public class ClientError
+    public class ClientError : JsonGistObject
     {
         [DataMember(Name = "message")]
         public string Message { get; set; }
@@ -13,8 +12,7 @@ namespace NppGist
         public List<Error> Errors;
     }
 
-    [DataContract]
-    public class Error
+    public class Error : JsonGistObject
     {
         [DataMember(Name = "resource")]
         public string Resource { get; set; }
