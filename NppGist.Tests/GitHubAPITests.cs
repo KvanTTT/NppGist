@@ -11,14 +11,14 @@ namespace NppGist.Tests
         [Test]
         public void GetUser()
         {
-            var response = Utils.SendRequest("https://api.github.com/users/KvanTTT");
+            var response = Utils.SendRequestAsync("https://api.github.com/users/KvanTTT").Result;
             var user = JsonSerializer.DeserializeFromString<User>(response);
         }
 
         [Test]
         public void GetGists()
         {
-            var gists = Utils.SendJsonRequest<List<Gist>>("https://api.github.com/gists");
+            var gists = Utils.SendJsonRequestAsync<List<Gist>>("https://api.github.com/gists").Result;
             Assert.Greater(gists.Count, 0);
         }
     }

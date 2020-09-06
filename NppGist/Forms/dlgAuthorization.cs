@@ -27,7 +27,7 @@ namespace NppGist.Forms
             User user = null;
             try
             {
-                var response = Utils.MakeRequest("user", tbAccessToken.Text.Trim()).Result;
+                var response = Utils.SendRequest("user", tbAccessToken.Text.Trim()).Result;
                 user = JsonSerializer.DeserializeFromStream<User>(response.Content.ReadAsStreamAsync().Result);
 
                 bool containsGistScope = response.Headers.Any(header => header.Key == "X-OAuth-Scopes" &&

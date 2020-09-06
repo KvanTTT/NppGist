@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using NppGist.JsonMapping;
 
@@ -35,11 +36,11 @@ namespace NppGist.Forms
             toolTip.SetToolTip(btnUpdate, "Update Gists");
         }
 
-        private void frmSaveGist_Load(object sender, EventArgs e)
+        private async void frmSaveGist_Load(object sender, EventArgs e)
         {
             try
             {
-                if (!UpdateGists())
+                if (!await UpdateGists())
                 {
                     return;
                 }
@@ -99,7 +100,7 @@ namespace NppGist.Forms
                 btnSave_Click(sender, e);
         }
 
-        private void btnSave_Click(object sender, EventArgs e)
+        private async void btnSave_Click(object sender, EventArgs e)
         {
             try
             {
@@ -109,7 +110,7 @@ namespace NppGist.Forms
                     if (tvGists.SelectedNode.Name == GuiUtils.AllGistsKey)
                     {
                         // Creating new gist
-                        var createdGist = CreateGist();
+                        var createdGist = await CreateGist();
                         if (cbCloseDialog.Checked)
                         {
                             closeDialog = true;
@@ -145,7 +146,7 @@ namespace NppGist.Forms
 
                             if (updateGistFile || createGistFile)
                             {
-                                var updatedGist = UpdateOrCreateFileInGist(gist);
+                                var updatedGist = await UpdateOrCreateFileInGist(gist);
                                 if (cbCloseDialog.Checked)
                                     closeDialog = true;
                                 else
@@ -181,7 +182,7 @@ namespace NppGist.Forms
 
                             if (updateGistFile)
                             {
-                                var updatedGist = UpdateOrCreateFileInGist(gist);
+                                var updatedGist = await UpdateOrCreateFileInGist(gist);
                                 if (cbCloseDialog.Checked)
                                     closeDialog = true;
                                 else
@@ -192,7 +193,7 @@ namespace NppGist.Forms
                             }
                             else if (renameGistFile)
                             {
-                                var updatedGist = RenameFileInGist(gist, file);
+                                var updatedGist = await RenameFileInGist(gist, file);
                                 if (cbCloseDialog.Checked)
                                     closeDialog = true;
                                 else
@@ -204,7 +205,8 @@ namespace NppGist.Forms
                         }
                     }
                 }
-                if (sender is TreeView && closeDialog)
+
+                if (closeDialog)
                     Close();
             }
             catch (Exception ex)
@@ -213,7 +215,7 @@ namespace NppGist.Forms
             }
         }
 
-        private Gist CreateGist()
+        private async Task<Gist> CreateGist()
         {
             var fileContent = PluginBase.GetCurrentFileText();
             var creatingGist = new UpdatedGist
@@ -225,14 +227,14 @@ namespace NppGist.Forms
                     {tbGistName.Text, new UpdatedFile {Content = fileContent}}
                 }
             };
-            var gist = Utils.SendJsonRequest<Gist>($"gists", Main.Token, HttpMethod.Post, creatingGist);
+            var gist = await Utils.SendJsonRequestAsync<Gist>($"gists", Main.Token, HttpMethod.Post, creatingGist);
             gists.Add(gist.Id, gist);
             gists = gists.OrderByDescending(g => g.Value.CreatedAt)
                 .ToDictionary(g => g.Key, g => g.Value);
             return gist;
         }
 
-        private Gist UpdateOrCreateFileInGist(Gist gist)
+        private async Task<Gist> UpdateOrCreateFileInGist(Gist gist)
         {
             var fileContent = PluginBase.GetCurrentFileText();
             var editingGist = new UpdatedGist();
@@ -242,12 +244,12 @@ namespace NppGist.Forms
             {
                 { tbGistName.Text, new UpdatedFile { Content = fileContent }}
             };
-            var responseGist = Utils.SendJsonRequest<Gist>($"gists/{gist.Id}", Main.Token, Utils.PatchHttpMethod, editingGist);
+            var responseGist = await Utils.SendJsonRequestAsync<Gist>($"gists/{gist.Id}", Main.Token, Utils.PatchHttpMethod, editingGist);
             gists[gist.Id] = responseGist;
             return responseGist;
         }
 
-        private Gist RenameFileInGist(Gist gist, GistFile file)
+        private async Task<Gist> RenameFileInGist(Gist gist, GistFile file)
         {
             var fileContent = PluginBase.GetCurrentFileText();
             var editingGist = new UpdatedGist();
@@ -257,7 +259,7 @@ namespace NppGist.Forms
             {
                 { file.Filename, new UpdatedFile { Filename = tbGistName.Text, Content = fileContent }}
             };
-            var responseGist = Utils.SendJsonRequest<Gist>($"gists/{gist.Id}", Main.Token,
+            var responseGist = await Utils.SendJsonRequestAsync<Gist>($"gists/{gist.Id}", Main.Token,
                 Utils.PatchHttpMethod, editingGist);
             gists[gist.Id] = responseGist;
             return responseGist;
@@ -278,16 +280,13 @@ namespace NppGist.Forms
             }
         }
 
-        private void btnUpdate_Click(object sender, EventArgs e)
-        {
-            UpdateGists();
-        }
+        private async void btnUpdate_Click(object sender, EventArgs e) => await UpdateGists();
 
-        private bool UpdateGists()
+        private async Task<bool> UpdateGists()
         {
             try
             {
-                var gists = Utils.SendJsonRequest<List<Gist>>("gists", Main.Token);
+                var gists = await Utils.SendJsonRequestAsync<List<Gist>>("gists", Main.Token);
                 this.gists = gists.ToDictionary(gist => gist.Id);
                 GuiUtils.RebuildTreeView(tvGists, this.gists, true);
 
@@ -301,14 +300,14 @@ namespace NppGist.Forms
             return false;
         }
 
-        private void btnDelete_Click(object sender, EventArgs e)
+        private async void btnDelete_Click(object sender, EventArgs e)
         {
-            GuiUtils.DeleteItem(tvGists, gists, true);
+            await GuiUtils.DeleteItem(tvGists, gists, true);
         }
 
-        private void btnRename_Click(object sender, EventArgs e)
+        private async void btnRename_Click(object sender, EventArgs e)
         {
-            GuiUtils.RenameItem(tvGists, gists, true);
+            await GuiUtils.RenameItem(tvGists, gists, true);
         }
 
         private void tvGists_AfterSelect(object sender, TreeViewEventArgs e)
@@ -387,12 +386,12 @@ namespace NppGist.Forms
             closeDialog = true;
         }
 
-        private void tvGists_KeyUp(object sender, KeyEventArgs e)
+        private async void tvGists_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
-                GuiUtils.DeleteItem(tvGists, gists, true);
+                await GuiUtils.DeleteItem(tvGists, gists, true);
             else if (e.KeyCode == Keys.F2)
-                GuiUtils.RenameItem(tvGists, gists, true);
+                await GuiUtils.RenameItem(tvGists, gists, true);
         }
 
         private void tbGistName_TextChanged(object sender, EventArgs e)

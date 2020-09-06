@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using NppGist.JsonMapping;
 
@@ -13,10 +14,10 @@ namespace NppGist.Forms
     internal class GuiUtils
     {
         internal const string AllGistsKey = "allgists";
-        internal static Color SecretGistColor = Color.FromArgb(255, 248, 238, 199);
-        internal static Color SecretGistForeColor = Color.FromArgb(255, 161, 136, 43);
+        private static Color SecretGistColor = Color.FromArgb(255, 248, 238, 199);
+        private static Color SecretGistForeColor = Color.FromArgb(255, 161, 136, 43);
 
-        public static DialogResult DeleteItem(TreeView treeView, Dictionary<string, Gist> gists, bool showRoot)
+        public static async Task<DialogResult> DeleteItem(TreeView treeView, Dictionary<string, Gist> gists, bool showRoot)
         {
             DialogResult result = DialogResult.None;
             if (treeView.SelectedNode != null && treeView.SelectedNode.Name != AllGistsKey)
@@ -32,7 +33,7 @@ namespace NppGist.Forms
                         if ((result = MessageBox.Show($"Do you want to delete gist \"{file.Filename}\"?", string.Empty, MessageBoxButtons.YesNo))
                             == DialogResult.Yes)
                         {
-                            Utils.SendRequest($"gists/{gist.Id}", Main.Token, HttpMethod.Delete);
+                            await Utils.SendRequestAsync($"gists/{gist.Id}", Main.Token, HttpMethod.Delete);
                             gists.Remove(gist.Id);
                             RebuildTreeView(treeView, gists, showRoot);
                         }
@@ -46,7 +47,7 @@ namespace NppGist.Forms
                             {
                                 Files = new Dictionary<string, string> {{file.Filename, null}}
                             };
-                            var responseGist = Utils.SendJsonRequest<Gist>($"gists/{gist.Id}", Main.Token,
+                            var responseGist = await Utils.SendJsonRequestAsync<Gist>($"gists/{gist.Id}", Main.Token,
                                 Utils.PatchHttpMethod, deletedFile);
                             gists[gist.Id] = responseGist;
                             RebuildTreeView(treeView, gists, showRoot);
@@ -61,7 +62,7 @@ namespace NppGist.Forms
             return result;
         }
 
-        public static DialogResult RenameItem(TreeView treeView, Dictionary<string, Gist> gists, bool showRoot)
+        public static async Task RenameItem(TreeView treeView, Dictionary<string, Gist> gists, bool showRoot)
         {
             DialogResult result = DialogResult.None;
             if (treeView.SelectedNode != null && treeView.SelectedNode.Name != AllGistsKey)
@@ -90,7 +91,7 @@ namespace NppGist.Forms
 
                             if (save)
                             {
-                                var fileContent = Utils.SendRequest(file.RawUrl);
+                                var fileContent = await Utils.SendRequestAsync(file.RawUrl);
                                 var renamingGist = new UpdatedGist
                                 {
                                     Files = new Dictionary<string, UpdatedFile>
@@ -107,7 +108,7 @@ namespace NppGist.Forms
 
                                 try
                                 {
-                                    var responseGist = Utils.SendJsonRequest<Gist>(
+                                    var responseGist = await Utils.SendJsonRequestAsync<Gist>(
                                         $"gists/{gist.Id}", Main.Token,
                                         Utils.PatchHttpMethod, renamingGist);
                                     gists[gist.Id] = responseGist;
@@ -131,7 +132,6 @@ namespace NppGist.Forms
                     MessageBox.Show("Unable to rename gist or file." + Environment.NewLine + "Error message: " + ex.Message);
                 }
             }
-            return result;
         }
 
         public static void RebuildTreeView(TreeView treeView, Dictionary<string, Gist> gists, bool showRoot)

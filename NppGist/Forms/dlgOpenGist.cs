@@ -29,11 +29,11 @@ namespace NppGist.Forms
             toolTip.SetToolTip(btnUpdate, "Update Gists");
         }
 
-        private void btnUpdate_Click(object sender, EventArgs e)
+        private async void btnUpdate_Click(object sender, EventArgs e)
         {
             try
             {
-                var gists = Utils.SendJsonRequest<List<Gist>>("gists", Main.Token);
+                var gists = await Utils.SendJsonRequestAsync<List<Gist>>("gists", Main.Token);
                 this.gists = gists.ToDictionary(gist => gist.Id);
                 GuiUtils.RebuildTreeView(tvGists, this.gists, false);
             }
@@ -91,7 +91,7 @@ namespace NppGist.Forms
             }
         }
 
-        private void btnOpen_Click(object sender, EventArgs e)
+        private async void btnOpen_Click(object sender, EventArgs e)
         {
             try
             {
@@ -101,7 +101,7 @@ namespace NppGist.Forms
                     var strs = tvGists.SelectedNode.Name.Split('/');
                     var gist = gists[strs[0]];
                     var file = gist.Files[strs[1]];
-                    var fileContent = Utils.SendRequest(file.RawUrl);
+                    var fileContent = await Utils.SendRequestAsync(file.RawUrl);
 
                     if (!cbSaveToLocal.Checked)
                     {
@@ -189,22 +189,22 @@ namespace NppGist.Forms
             }
         }
 
-        private void tvGists_KeyUp(object sender, KeyEventArgs e)
+        private async void tvGists_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
-                GuiUtils.DeleteItem(tvGists, gists, false);
+                await GuiUtils.DeleteItem(tvGists, gists, false);
             else if (e.KeyCode == Keys.F2)
-                GuiUtils.RenameItem(tvGists, gists, false);
+                await GuiUtils.RenameItem(tvGists, gists, false);
         }
 
-        private void btnDelete_Click(object sender, EventArgs e)
+        private async void btnDelete_Click(object sender, EventArgs e)
         {
-            GuiUtils.DeleteItem(tvGists, gists, false);
+            await GuiUtils.DeleteItem(tvGists, gists, false);
         }
 
-        private void btnRename_Click(object sender, EventArgs e)
+        private async void btnRename_Click(object sender, EventArgs e)
         {
-            GuiUtils.RenameItem(tvGists, gists, false);
+            await GuiUtils.RenameItem(tvGists, gists, false);
         }
 
         private void tbGistLink_Enter(object sender, EventArgs e)

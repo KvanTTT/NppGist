@@ -19,30 +19,22 @@ namespace NppGist
             JsConfig.IncludeNullValuesInDictionaries = true;
         }
 
-        public static string SendRequest(string url, string token = null, HttpMethod method = null,
-            JsonGistObject obj = null, int timeout = 5000)
-            => SendRequestAsync(url, token, method, obj, timeout).Result;
-
-        public static T SendJsonRequest<T>(string url, string token = null, HttpMethod method = null,
-            JsonGistObject obj = null, int timeout = 5000)
-            => SendJsonRequestAsync<T>(url, token, method, obj, timeout).Result;
-
         public static async Task<string> SendRequestAsync(string url, string token = null, HttpMethod method = null,
             JsonGistObject obj = null, int timeout = 5000)
         {
-            var response = await MakeRequest(url, token, method, obj, timeout).ConfigureAwait(false);
+            var response = await SendRequest(url, token, method, obj, timeout).ConfigureAwait(false);
             return await response.Content.ReadAsStringAsync();
         }
 
         public static async Task<T> SendJsonRequestAsync<T>(string url, string token = null, HttpMethod method = null,
             JsonGistObject obj = null, int timeout = 5000)
         {
-            var response = await MakeRequest(url, token, method, obj, timeout).ConfigureAwait(false);
+            var response = await SendRequest(url, token, method, obj, timeout).ConfigureAwait(false);
             var result = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
             return JsonSerializer.DeserializeFromStream<T>(result);
         }
 
-        public static Task<HttpResponseMessage> MakeRequest(string url, string token = null, HttpMethod method = null,
+        public static Task<HttpResponseMessage> SendRequest(string url, string token = null, HttpMethod method = null,
             JsonGistObject obj = null, int timeout = 5000)
         {
             HttpRequestMessage requestMessage = new HttpRequestMessage(method ?? HttpMethod.Get, url);
