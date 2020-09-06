@@ -1,67 +1,9 @@
-﻿using ServiceStack.Text;
-using System;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
-using NppGist.JsonMapping;
+﻿using System.Text;
 
 namespace NppGist
 {
     public class Utils
     {
-        public static readonly HttpMethod PatchHttpMethod = new HttpMethod("PATCH");
-
-        static Utils()
-        {
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            JsConfig.IncludeNullValuesInDictionaries = true;
-        }
-
-        public static async Task<string> SendRequestAsync(string url, string token = null, HttpMethod method = null,
-            JsonGistObject obj = null)
-        {
-            var response = await SendRequest(url, token, method, obj).ConfigureAwait(false);
-            return await response.Content.ReadAsStringAsync();
-        }
-
-        public static async Task<T> SendJsonRequestAsync<T>(string url, string token = null, HttpMethod method = null,
-            JsonGistObject obj = null)
-        {
-            var response = await SendRequest(url, token, method, obj).ConfigureAwait(false);
-            var result = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-            return JsonSerializer.DeserializeFromStream<T>(result);
-        }
-
-        public static Task<HttpResponseMessage> SendRequest(string url, string token = null, HttpMethod method = null,
-            JsonGistObject obj = null)
-        {
-            HttpRequestMessage requestMessage = new HttpRequestMessage(method ?? HttpMethod.Get, url);
-
-            if ((method == HttpMethod.Post || method?.Method == PatchHttpMethod.Method) && obj != null)
-            {
-                var str = JsonSerializer.SerializeToString(obj);
-                requestMessage.Content = new StringContent(str);
-            }
-
-            var client = new HttpClient
-            {
-                BaseAddress = new Uri(Main.ApiUrl),
-                Timeout = TimeSpan.FromMilliseconds(5000)
-            };
-            var headers = client.DefaultRequestHeaders;
-            headers.UserAgent.Add(new ProductInfoHeaderValue("NppGist", "1.0"));
-            headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-
-            if (!string.IsNullOrEmpty(token))
-            {
-                headers.Authorization = new AuthenticationHeaderValue("Token", token);
-            }
-
-            return client.SendAsync(requestMessage);
-        }
-
         public static string GetSafeFilename(string filename)
         {
             return string.Join("-", filename.Split(Lists.InvalidFilenameCharacters));
@@ -76,14 +18,14 @@ namespace NppGist
         {
             var result = new StringBuilder(filename.Length);
             bool lastCharIsHyphen = true;
-            for (int i = 0; i < filename.Length; i++)
+            foreach (var c in filename)
             {
-                if (IsLatinLetterDigitOrUnderline(filename[i]))
+                if (IsLatinLetterDigitOrUnderline(c))
                 {
-                    result.Append(char.ToLower(filename[i]));
+                    result.Append(char.ToLower(c));
                     lastCharIsHyphen = false;
                 }
-                else if (!lastCharIsHyphen && IsPunctuationOrSymbol(filename[i]))
+                else if (!lastCharIsHyphen && IsPunctuationOrSymbol(c))
                 {
                     result.Append('-');
                     lastCharIsHyphen = true;
@@ -104,14 +46,9 @@ namespace NppGist
             return result.ToString();
         }
 
-        public static bool IsLatinLetterDigitOrUnderline(char c)
-        {
-            return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '_';
-        }
+        private static bool IsLatinLetterDigitOrUnderline(char c) =>
+            c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '_';
 
-        public static bool IsPunctuationOrSymbol(char c)
-        {
-            return char.IsPunctuation(c) || char.IsSymbol(c);
-        }
+        private static bool IsPunctuationOrSymbol(char c) => char.IsPunctuation(c) || char.IsSymbol(c);
     }
 }

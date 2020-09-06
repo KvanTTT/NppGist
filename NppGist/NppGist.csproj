@@ -190,6 +190,7 @@
       <DependentUpon>dlgSaveGist.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\GuiUtils.cs" />
+    <Compile Include="GitHubService.cs" />
     <Compile Include="JsonMapping\ClientError.cs" />
     <Compile Include="JsonMapping\DeletedFile.cs" />
     <Compile Include="JsonMapping\JsonGistObject.cs" />

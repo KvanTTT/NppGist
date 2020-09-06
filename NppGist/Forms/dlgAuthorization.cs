@@ -27,7 +27,8 @@ namespace NppGist.Forms
             User user = null;
             try
             {
-                var response = Utils.SendRequest("user", tbAccessToken.Text.Trim()).Result;
+                Main.GitHubService = new GitHubService(tbAccessToken.Text.Trim());
+                var response = Main.GitHubService.SendRequest("user").Result;
                 user = JsonSerializer.DeserializeFromStream<User>(response.Content.ReadAsStreamAsync().Result);
 
                 bool containsGistScope = response.Headers.Any(header => header.Key == "X-OAuth-Scopes" &&
@@ -48,13 +49,14 @@ namespace NppGist.Forms
             if (!error)
             {
                 Main.Login = user.Login;
-                Main.Token = tbAccessToken.Text;
                 Win32.WritePrivateProfileString("Settings", "Login", Main.Login, Main.IniFileName);
-                Win32.WritePrivateProfileString("Settings", "AccessToken", AccessToken.EncryptToken(Main.Token), Main.IniFileName);
+                Win32.WritePrivateProfileString("Settings", "AccessToken", AccessToken.EncryptToken(Main.GitHubService.Token), Main.IniFileName);
                 closeDialog = true;
             }
             else
+            {
                 closeDialog = false;
+            }
         }
 
         private void btnCancel_Click(object sender, EventArgs e)

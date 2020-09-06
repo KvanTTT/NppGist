@@ -227,7 +227,7 @@ namespace NppGist.Forms
                     {tbGistName.Text, new UpdatedFile {Content = fileContent}}
                 }
             };
-            var gist = await Utils.SendJsonRequestAsync<Gist>($"gists", Main.Token, HttpMethod.Post, creatingGist);
+            var gist = await Main.GitHubService.SendJsonRequestAsync<Gist>($"gists", HttpMethod.Post, creatingGist);
             gists.Add(gist.Id, gist);
             gists = gists.OrderByDescending(g => g.Value.CreatedAt)
                 .ToDictionary(g => g.Key, g => g.Value);
@@ -244,7 +244,9 @@ namespace NppGist.Forms
             {
                 { tbGistName.Text, new UpdatedFile { Content = fileContent }}
             };
-            var responseGist = await Utils.SendJsonRequestAsync<Gist>($"gists/{gist.Id}", Main.Token, Utils.PatchHttpMethod, editingGist);
+            var responseGist =
+                await Main.GitHubService.SendJsonRequestAsync<Gist>($"gists/{gist.Id}", GitHubService.PatchHttpMethod,
+                    editingGist);
             gists[gist.Id] = responseGist;
             return responseGist;
         }
@@ -259,8 +261,9 @@ namespace NppGist.Forms
             {
                 { file.Filename, new UpdatedFile { Filename = tbGistName.Text, Content = fileContent }}
             };
-            var responseGist = await Utils.SendJsonRequestAsync<Gist>($"gists/{gist.Id}", Main.Token,
-                Utils.PatchHttpMethod, editingGist);
+            var responseGist =
+                await Main.GitHubService.SendJsonRequestAsync<Gist>($"gists/{gist.Id}", GitHubService.PatchHttpMethod,
+                    editingGist);
             gists[gist.Id] = responseGist;
             return responseGist;
         }
@@ -286,7 +289,7 @@ namespace NppGist.Forms
         {
             try
             {
-                var gists = await Utils.SendJsonRequestAsync<List<Gist>>("gists", Main.Token);
+                var gists = await Main.GitHubService.SendJsonRequestAsync<List<Gist>>("gists");
                 this.gists = gists.ToDictionary(gist => gist.Id);
                 GuiUtils.RebuildTreeView(tvGists, this.gists, true);
 

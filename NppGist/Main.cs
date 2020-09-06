@@ -12,15 +12,13 @@ namespace NppGist
 {
     internal class Main : PluginMain
     {
-        internal const string ApiUrl = "https://api.github.com/";
+        private const string pluginName = "NppGist";
         internal const string GistUrl = "https://gist.github.com";
         internal static string IniFileName;
-        internal static string Token;
         internal static string Login;
         internal static bool SaveLocally;
         internal static bool CloseSaveDialog = true;
         internal static bool CloseOpenDialog = true;
-        private const string pluginName = "NppGist";
 
         static Bitmap tbLoad = Properties.Resources.download;
         static Bitmap tbSave = Properties.Resources.upload;
@@ -28,6 +26,8 @@ namespace NppGist
         static int OpenCommandId = 1;
         static int SaveCommandId = 2;
         static int AboutCommandId = 3;
+
+        public static GitHubService GitHubService { get; set; }
 
         public override string PluginName => pluginName;
 
@@ -54,15 +54,17 @@ namespace NppGist
 
             str.Clear();
             Win32.GetPrivateProfileString("Settings", "AccessToken", string.Empty, str, (uint)str.Capacity, IniFileName);
+            string token;
             try
             {
-                Token = AccessToken.DecryptToken(str.ToString());
+                token = AccessToken.DecryptToken(str.ToString());
             }
             catch
             {
-                Token = "";
+                token = "";
             }
 
+            GitHubService = new GitHubService(token);
             SaveLocally = Convert.ToBoolean(Win32.GetPrivateProfileInt("Settings", "SaveToLocal", 1, IniFileName));
             CloseSaveDialog = Convert.ToBoolean(Win32.GetPrivateProfileInt("Settings", "CloseSaveDialog", 1, IniFileName));
             CloseOpenDialog = Convert.ToBoolean(Win32.GetPrivateProfileInt("Settings", "CloseOpenDialog", 1, IniFileName));
@@ -92,6 +94,11 @@ namespace NppGist
             Marshal.FreeHGlobal(pTbIcons);
         }
 
+        public override void PluginCleanUp()
+        {
+            GitHubService?.Dispose();
+        }
+
         private static void EnterAccessTokenCommand()
         {
             var authForm = new dlgAuthorization();
@@ -100,7 +107,7 @@ namespace NppGist
 
         private static void OpenGistCommand()
         {
-            if (!string.IsNullOrEmpty(Token) || (new dlgAuthorization()).ShowDialog() == DialogResult.OK)
+            if (!string.IsNullOrEmpty(GitHubService.Token) || (new dlgAuthorization()).ShowDialog() == DialogResult.OK)
             {
                 var openGistForm = new dlgOpenGist();
                 openGistForm.ShowDialog();
@@ -109,7 +116,7 @@ namespace NppGist
 
         private static void SaveGistCommand()
         {
-            if (!string.IsNullOrEmpty(Token) || (new dlgAuthorization()).ShowDialog() == DialogResult.OK)
+            if (!string.IsNullOrEmpty(GitHubService.Token) || (new dlgAuthorization()).ShowDialog() == DialogResult.OK)
             {
                 var saveGistForm = new dlgSaveGist();
                 saveGistForm.ShowDialog();

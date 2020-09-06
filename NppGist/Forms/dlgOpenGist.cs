@@ -33,7 +33,7 @@ namespace NppGist.Forms
         {
             try
             {
-                var gists = await Utils.SendJsonRequestAsync<List<Gist>>("gists", Main.Token);
+                var gists = await Main.GitHubService.SendJsonRequestAsync<List<Gist>>("gists");
                 this.gists = gists.ToDictionary(gist => gist.Id);
                 GuiUtils.RebuildTreeView(tvGists, this.gists, false);
             }
@@ -101,7 +101,7 @@ namespace NppGist.Forms
                     var strs = tvGists.SelectedNode.Name.Split('/');
                     var gist = gists[strs[0]];
                     var file = gist.Files[strs[1]];
-                    var fileContent = await Utils.SendRequestAsync(file.RawUrl);
+                    var fileContent = await Main.GitHubService.SendRequestAsync(file.RawUrl);
 
                     if (!cbSaveToLocal.Checked)
                     {

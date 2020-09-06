@@ -33,7 +33,7 @@ namespace NppGist.Forms
                         if ((result = MessageBox.Show($"Do you want to delete gist \"{file.Filename}\"?", string.Empty, MessageBoxButtons.YesNo))
                             == DialogResult.Yes)
                         {
-                            await Utils.SendRequestAsync($"gists/{gist.Id}", Main.Token, HttpMethod.Delete);
+                            await Main.GitHubService.SendRequestAsync($"gists/{gist.Id}", HttpMethod.Delete);
                             gists.Remove(gist.Id);
                             RebuildTreeView(treeView, gists, showRoot);
                         }
@@ -47,8 +47,8 @@ namespace NppGist.Forms
                             {
                                 Files = new Dictionary<string, string> {{file.Filename, null}}
                             };
-                            var responseGist = await Utils.SendJsonRequestAsync<Gist>($"gists/{gist.Id}", Main.Token,
-                                Utils.PatchHttpMethod, deletedFile);
+                            var responseGist = await Main.GitHubService.SendJsonRequestAsync<Gist>($"gists/{gist.Id}",
+                                GitHubService.PatchHttpMethod, deletedFile);
                             gists[gist.Id] = responseGist;
                             RebuildTreeView(treeView, gists, showRoot);
                         }
@@ -91,7 +91,7 @@ namespace NppGist.Forms
 
                             if (save)
                             {
-                                var fileContent = await Utils.SendRequestAsync(file.RawUrl);
+                                var fileContent = await Main.GitHubService.SendRequestAsync(file.RawUrl);
                                 var renamingGist = new UpdatedGist
                                 {
                                     Files = new Dictionary<string, UpdatedFile>
@@ -108,9 +108,8 @@ namespace NppGist.Forms
 
                                 try
                                 {
-                                    var responseGist = await Utils.SendJsonRequestAsync<Gist>(
-                                        $"gists/{gist.Id}", Main.Token,
-                                        Utils.PatchHttpMethod, renamingGist);
+                                    var responseGist = await Main.GitHubService.SendJsonRequestAsync<Gist>(
+                                        $"gists/{gist.Id}", GitHubService.PatchHttpMethod, renamingGist);
                                     gists[gist.Id] = responseGist;
                                     RebuildTreeView(treeView, gists, showRoot);
                                 }
