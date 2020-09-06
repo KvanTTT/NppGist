@@ -20,22 +20,22 @@ namespace NppGist
         }
 
         public static async Task<string> SendRequestAsync(string url, string token = null, HttpMethod method = null,
-            JsonGistObject obj = null, int timeout = 5000)
+            JsonGistObject obj = null)
         {
-            var response = await SendRequest(url, token, method, obj, timeout).ConfigureAwait(false);
+            var response = await SendRequest(url, token, method, obj).ConfigureAwait(false);
             return await response.Content.ReadAsStringAsync();
         }
 
         public static async Task<T> SendJsonRequestAsync<T>(string url, string token = null, HttpMethod method = null,
-            JsonGistObject obj = null, int timeout = 5000)
+            JsonGistObject obj = null)
         {
-            var response = await SendRequest(url, token, method, obj, timeout).ConfigureAwait(false);
+            var response = await SendRequest(url, token, method, obj).ConfigureAwait(false);
             var result = await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
             return JsonSerializer.DeserializeFromStream<T>(result);
         }
 
         public static Task<HttpResponseMessage> SendRequest(string url, string token = null, HttpMethod method = null,
-            JsonGistObject obj = null, int timeout = 5000)
+            JsonGistObject obj = null)
         {
             HttpRequestMessage requestMessage = new HttpRequestMessage(method ?? HttpMethod.Get, url);
 
@@ -48,7 +48,7 @@ namespace NppGist
             var client = new HttpClient
             {
                 BaseAddress = new Uri(Main.ApiUrl),
-                Timeout = TimeSpan.FromMilliseconds(timeout)
+                Timeout = TimeSpan.FromMilliseconds(5000)
             };
             var headers = client.DefaultRequestHeaders;
             headers.UserAgent.Add(new ProductInfoHeaderValue("NppGist", "1.0"));
