@@ -4,7 +4,7 @@ Notepad++ plugin for working with github gists (creating, editing, removing, ren
 
 Based on [NppNetInf](https://github.com/KvanTTT/NppNetInf).
 
-[ServiceStack.Text](https://github.com/ServiceStack/ServiceStack.Text) is using
+[ServiceStack.Text](https://github.com/ServiceStack/ServiceStack.Text) is used
 for JSON serialization & deserialization.
 
 ## Build status
