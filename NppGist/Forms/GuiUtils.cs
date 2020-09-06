@@ -14,8 +14,8 @@ namespace NppGist.Forms
     internal class GuiUtils
     {
         internal const string AllGistsKey = "allgists";
-        private static Color SecretGistColor = Color.FromArgb(255, 248, 238, 199);
-        private static Color SecretGistForeColor = Color.FromArgb(255, 161, 136, 43);
+        internal static Color SecretGistColor = Color.FromArgb(255, 248, 238, 199);
+        internal static Color SecretGistForeColor = Color.FromArgb(255, 161, 136, 43);
 
         public static async Task<DialogResult> DeleteItem(TreeView treeView, Dictionary<string, Gist> gists, bool showRoot)
         {
