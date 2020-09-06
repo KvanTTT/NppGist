@@ -77,25 +77,31 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="ServiceStack.Text, Version=5.0.0.0, Culture=neutral, PublicKeyToken=02c12cbda47e6587, processorArchitecture=MSIL">
-      <HintPath>..\packages\ServiceStack.Text.5.5.0\lib\net45\ServiceStack.Text.dll</HintPath>
+    <Reference Include="mscorlib" />
+    <Reference Include="ServiceStack.Text, Version=5.0.0.0, Culture=neutral, PublicKeyToken=02c12cbda47e6587">
+      <HintPath>..\packages\ServiceStack.Text.5.9.2\lib\net45\ServiceStack.Text.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
-    <Reference Include="System.Memory, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.2\lib\netstandard2.0\System.Memory.dll</HintPath>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+      <Private>True</Private>
     </Reference>
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
@@ -185,6 +191,8 @@
     </Compile>
     <Compile Include="Forms\GuiUtils.cs" />
     <Compile Include="JsonMapping\ClientError.cs" />
+    <Compile Include="JsonMapping\DeletedFile.cs" />
+    <Compile Include="JsonMapping\JsonObject.cs" />
     <Compile Include="JsonMapping\UpdatedFile.cs" />
     <Compile Include="JsonMapping\UpdatedGist.cs" />
     <Compile Include="JsonMapping\GistFile.cs" />
@@ -199,7 +207,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Utils.cs" />
-    <Compile Include="WebRequestMethod.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Forms\dlgAuthorization.resx">
@@ -242,19 +249,19 @@
     <None Include="Resources\upload.png" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\packages\ServiceStack.Text.5.5.0\lib\net45\ServiceStack.Text.dll">
+    <EmbeddedResource Include="..\packages\ServiceStack.Text.5.9.2\lib\net45\ServiceStack.Text.dll">
       <Link>ServiceStack.Text.dll</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll">
+    <EmbeddedResource Include="..\packages\System.Buffers.4.5.1\lib\netstandard2.0\System.Buffers.dll">
       <Link>System.Buffers.dll</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\packages\System.Memory.4.5.2\lib\netstandard2.0\System.Memory.dll">
+    <EmbeddedResource Include="..\packages\System.Memory.4.5.4\lib\netstandard2.0\System.Memory.dll">
       <Link>System.Memory.dll</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll">
       <Link>System.Numerics.Vectors.dll</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll">
+    <EmbeddedResource Include="..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll">
       <Link>System.Runtime.CompilerServices.Unsafe.dll</Link>
     </EmbeddedResource>
   </ItemGroup>
