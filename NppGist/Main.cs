@@ -70,6 +70,8 @@ namespace NppGist
             CloseOpenDialog = Convert.ToBoolean(Win32.GetPrivateProfileInt("Settings", "CloseOpenDialog", 1, IniFileName));
             GuiUtils.SecretGistColor = Color.FromArgb(Win32.GetPrivateProfileInt("Settings", "SecretGistBackgroundColor", GuiUtils.SecretGistColor.ToArgb(), IniFileName));
             GuiUtils.SecretGistForeColor = Color.FromArgb(Win32.GetPrivateProfileInt("Settings", "SecretGistForegroundColor", GuiUtils.SecretGistForeColor.ToArgb(), IniFileName));
+            Paginator.GistsPerPage =
+                Convert.ToInt32(Win32.GetPrivateProfileInt("Settings", "GistsPerPage", Paginator.GistsPerPage, IniFileName));
 
             PluginBase.SetCommand(TokenCommandId, "Access Token", EnterAccessTokenCommand);
             PluginBase.SetCommand(OpenCommandId, "Open Gist", OpenGistCommand, new ShortcutKey(false, false, false, Keys.None));

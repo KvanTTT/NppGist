@@ -179,7 +179,10 @@ namespace NppGist.Forms
                     }
                 }
                 treeView.ExpandAll();
-                treeView.Nodes[0].EnsureVisible();
+                if (treeView.Nodes.Count > 0)
+                {
+                    treeView.Nodes[0].EnsureVisible();
+                }
             }
             catch (Exception ex)
             {

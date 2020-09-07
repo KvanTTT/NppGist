@@ -13,13 +13,15 @@ namespace NppGist.Forms
 {
     public partial class dlgSaveGist : Form
     {
-        Dictionary<string, Gist> gists;
-        readonly System.Threading.Timer detectExtensionTimer;
-        bool closeDialog;
+        private readonly System.Threading.Timer detectExtensionTimer;
+        private bool closeDialog;
+        private Paginator paginator;
 
         public dlgSaveGist()
         {
             InitializeComponent();
+
+            paginator = new Paginator(tvGists, btnPrevPage, btnNextPage, tbPageNumber, true);
 
             foreach (var lang in Lists.GistLangs)
                 cmbLanguage.Items.Add(lang);
@@ -30,7 +32,9 @@ namespace NppGist.Forms
             cmbLanguage.SelectedItem = gistNppLang.Key ?? Lists.GistLangs[0];
             cbCloseDialog.Checked = Main.CloseSaveDialog;
 
-            detectExtensionTimer = new System.Threading.Timer(_ => GuiUtils.UpdateExtenstionResult(cmbLanguage, tbGistName), null, 0, Timeout.Infinite);
+            detectExtensionTimer =
+                new System.Threading.Timer(_ => GuiUtils.UpdateExtenstionResult(cmbLanguage, tbGistName), null, 0,
+                    Timeout.Infinite);
 
             toolTip.SetToolTip(btnGoToGitHub, "Open Gist in Browser");
             toolTip.SetToolTip(btnUpdate, "Update Gists");
@@ -40,7 +44,7 @@ namespace NppGist.Forms
         {
             try
             {
-                if (!await UpdateGists())
+                if (!await paginator.UpdateGists(PageStatus.Init))
                 {
                     return;
                 }
@@ -49,31 +53,32 @@ namespace NppGist.Forms
                 tvGists.Select();
                 if (currentFileName.StartsWith("new"))
                 {
-                    tvGists.SelectedNode = tvGists.Nodes[0];
+                    tvGists.SelectedNode = tvGists.Nodes.Count > 0 ? tvGists.Nodes[0] : null;
                 }
                 else
                 {
                     tvGists.SelectedNode = null;
                     bool nodeFound = false;
                     var shortFileName = Path.GetFileName(currentFileName);
-                    foreach (var keyGist in gists)
+                    foreach (var keyGist in paginator.Gists)
                     {
                         var gist = keyGist.Value;
                         if (gist.Files.Count == 1 && gist.Files.First().Key.StartsWith("gistfile"))
                         {
                             if (shortFileName == "gist-" + gist.Id)
                             {
-                                tvGists.SelectedNode = tvGists.Nodes.Find(GuiUtils.GetTreeViewKey(gist, gist.Files.First().Value), true)[0];
+                                tvGists.SelectedNode = tvGists.Nodes.Find(GuiUtils.GetTreeViewKey(gist, gist.Files.First().Value), true).FirstOrDefault();
                                 nodeFound = true;
                                 break;
                             }
                         }
                         else
                         {
-                            var gistFile = gist.Files.FirstOrDefault(file => Utils.GetSafeFilename(file.Key) == shortFileName);
+                            var gistFile =
+                                gist.Files.FirstOrDefault(file => Utils.GetSafeFilename(file.Key) == shortFileName);
                             if (gistFile.Key != null)
                             {
-                                tvGists.SelectedNode = tvGists.Nodes.Find(GuiUtils.GetTreeViewKey(gist, gistFile.Value), true)[0];
+                                tvGists.SelectedNode = tvGists.Nodes.Find(GuiUtils.GetTreeViewKey(gist, gistFile.Value), true).FirstOrDefault();
                                 nodeFound = true;
                                 break;
                             }
@@ -81,10 +86,10 @@ namespace NppGist.Forms
                     }
                     if (!nodeFound)
                     {
-                        tvGists.SelectedNode = tvGists.Nodes[0];
+                        tvGists.SelectedNode = tvGists.Nodes.Count > 0 ? tvGists.Nodes[0] : null;
                         tbGistName.Text = shortFileName;
                     }
-                    tvGists.SelectedNode.EnsureVisible();
+                    tvGists.SelectedNode?.EnsureVisible();
                     GuiUtils.UpdateExtenstionResult(cmbLanguage, tbGistName);
                 }
             }
@@ -117,7 +122,7 @@ namespace NppGist.Forms
                         }
                         else
                         {
-                            GuiUtils.RebuildTreeView(tvGists, gists, true);
+                            await paginator.UpdateGists(PageStatus.Init);
                             SelectFileInGist(createdGist, "");
                         }
                     }
@@ -125,7 +130,7 @@ namespace NppGist.Forms
                     {
                         // Updating existing gist
                         var strs = tvGists.SelectedNode.Name.Split('/');
-                        var gist = gists[strs[0]];
+                        var gist = paginator.Gists[strs[0]];
                         var file = gist.Files[strs[1]];
                         var gistName = GuiUtils.GetGistName(gist);
 
@@ -148,10 +153,12 @@ namespace NppGist.Forms
                             {
                                 var updatedGist = await UpdateOrCreateFileInGist(gist);
                                 if (cbCloseDialog.Checked)
+                                {
                                     closeDialog = true;
+                                }
                                 else
                                 {
-                                    GuiUtils.RebuildTreeView(tvGists, gists, true);
+                                    GuiUtils.RebuildTreeView(tvGists, paginator.Gists, true);
                                     SelectFileInGist(updatedGist, tbGistName.Text);
                                 }
                             }
@@ -184,10 +191,12 @@ namespace NppGist.Forms
                             {
                                 var updatedGist = await UpdateOrCreateFileInGist(gist);
                                 if (cbCloseDialog.Checked)
+                                {
                                     closeDialog = true;
+                                }
                                 else
                                 {
-                                    GuiUtils.RebuildTreeView(tvGists, gists, true);
+                                    GuiUtils.RebuildTreeView(tvGists, paginator.Gists, true);
                                     SelectFileInGist(updatedGist, tbGistName.Text);
                                 }
                             }
@@ -195,10 +204,12 @@ namespace NppGist.Forms
                             {
                                 var updatedGist = await RenameFileInGist(gist, file);
                                 if (cbCloseDialog.Checked)
+                                {
                                     closeDialog = true;
+                                }
                                 else
                                 {
-                                    GuiUtils.RebuildTreeView(tvGists, gists, true);
+                                    GuiUtils.RebuildTreeView(tvGists, paginator.Gists, true);
                                     SelectFileInGist(updatedGist, tbGistName.Text);
                                 }
                             }
@@ -227,11 +238,7 @@ namespace NppGist.Forms
                     {tbGistName.Text, new UpdatedFile {Content = fileContent}}
                 }
             };
-            var gist = await Main.GitHubService.SendJsonRequestAsync<Gist>($"gists", HttpMethod.Post, creatingGist);
-            gists.Add(gist.Id, gist);
-            gists = gists.OrderByDescending(g => g.Value.CreatedAt)
-                .ToDictionary(g => g.Key, g => g.Value);
-            return gist;
+            return await Main.GitHubService.SendJsonRequestAsync<Gist>("gists", HttpMethod.Post, creatingGist);
         }
 
         private async Task<Gist> UpdateOrCreateFileInGist(Gist gist)
@@ -247,7 +254,7 @@ namespace NppGist.Forms
             var responseGist =
                 await Main.GitHubService.SendJsonRequestAsync<Gist>($"gists/{gist.Id}", GitHubService.PatchHttpMethod,
                     editingGist);
-            gists[gist.Id] = responseGist;
+            paginator.Gists[gist.Id] = responseGist;
             return responseGist;
         }
 
@@ -264,7 +271,7 @@ namespace NppGist.Forms
             var responseGist =
                 await Main.GitHubService.SendJsonRequestAsync<Gist>($"gists/{gist.Id}", GitHubService.PatchHttpMethod,
                     editingGist);
-            gists[gist.Id] = responseGist;
+            paginator.Gists[gist.Id] = responseGist;
             return responseGist;
         }
 
@@ -276,42 +283,23 @@ namespace NppGist.Forms
             {
                 BeginInvoke((Action)delegate
                 {
-                    node[0].EnsureVisible();
-                    tvGists.Select();
-                    tvGists.SelectedNode = node[0];
+                    if (node.Length > 0)
+                    {
+                        node[0].EnsureVisible();
+                        tvGists.Select();
+                        tvGists.SelectedNode = node[0];
+                    }
                 });
             }
         }
 
-        private async void btnUpdate_Click(object sender, EventArgs e) => await UpdateGists();
+        private async void btnUpdate_Click(object sender, EventArgs e) => await paginator.UpdateGists(PageStatus.Update);
 
-        private async Task<bool> UpdateGists()
-        {
-            try
-            {
-                var gists = await Main.GitHubService.SendJsonRequestAsync<List<Gist>>("gists");
-                this.gists = gists.ToDictionary(gist => gist.Id);
-                GuiUtils.RebuildTreeView(tvGists, this.gists, true);
+        private async void btnDelete_Click(object sender, EventArgs e) =>
+            await GuiUtils.DeleteItem(tvGists, paginator.Gists, true);
 
-                return true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Unable to connect to api.github.com. Try to refresh.{Environment.NewLine}Error message: {ex.Message}");
-            }
-
-            return false;
-        }
-
-        private async void btnDelete_Click(object sender, EventArgs e)
-        {
-            await GuiUtils.DeleteItem(tvGists, gists, true);
-        }
-
-        private async void btnRename_Click(object sender, EventArgs e)
-        {
-            await GuiUtils.RenameItem(tvGists, gists, true);
-        }
+        private async void btnRename_Click(object sender, EventArgs e) =>
+            await GuiUtils.RenameItem(tvGists, paginator.Gists, true);
 
         private void tvGists_AfterSelect(object sender, TreeViewEventArgs e)
         {
@@ -330,7 +318,7 @@ namespace NppGist.Forms
                 else
                 {
                     var strs = tvGists.SelectedNode.Name.Split('/');
-                    var gist = gists[strs[0]];
+                    var gist = paginator.Gists[strs[0]];
                     var file = gist.Files[strs[1]];
                     if (gist.Files.Count == 1 || tvGists.SelectedNode.Parent.Name != GuiUtils.AllGistsKey)
                     {
@@ -392,9 +380,9 @@ namespace NppGist.Forms
         private async void tvGists_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
-                await GuiUtils.DeleteItem(tvGists, gists, true);
+                await GuiUtils.DeleteItem(tvGists, paginator.Gists, true);
             else if (e.KeyCode == Keys.F2)
-                await GuiUtils.RenameItem(tvGists, gists, true);
+                await GuiUtils.RenameItem(tvGists, paginator.Gists, true);
         }
 
         private void tbGistName_TextChanged(object sender, EventArgs e)
@@ -427,5 +415,9 @@ namespace NppGist.Forms
         {
             GuiUtils.GoToGitHub(tbGistLink.Text);
         }
+
+        private async void btnPrevPage_Click(object sender, EventArgs e) => await paginator.UpdateGists(PageStatus.Prev);
+
+        private async void btnNextPage_Click(object sender, EventArgs e) => await paginator.UpdateGists(PageStatus.Next);
     }
 }
