@@ -81,18 +81,51 @@ namespace NppGist
 
         public override void SetToolBarIcon()
         {
-            toolbarIcons tbIcons = new toolbarIcons();
-            tbIcons.hToolbarBmp = tbLoad.GetHbitmap();
+            SetToolBarIcon(true);
+            SetToolBarIcon(false);
+        }
+
+        private static void SetToolBarIcon(bool openIcon)
+        {
+            int commandId;
+            Bitmap bitmap;
+            if (openIcon)
+            {
+                bitmap = tbLoad;
+                commandId = OpenCommandId;
+            }
+            else
+            {
+                bitmap = tbSave;
+                commandId = SaveCommandId;
+            }
+
+            NppMsg nppMsg;
+            object tbIcons;
+            if (PluginBase.NppVersion.Major >= 8)
+            {
+                nppMsg = NppMsg.NPPM_ADDTOOLBARICON_FORDARKMODE;
+                tbIcons = new toolbarIconsWithDarkMode
+                {
+                    hToolbarBmp = bitmap.GetHbitmap(),
+                    hToolbarIcon = bitmap.GetHicon(),
+                    hToolbarIconDarkMode = bitmap.GetHicon()
+                };
+            }
+            else
+            {
+                nppMsg = NppMsg.NPPM_ADDTOOLBARICON_DEPRECATED;
+                tbIcons = new toolbarIcons
+                {
+                    hToolbarBmp = bitmap.GetHbitmap(),
+                    hToolbarIcon = bitmap.GetHicon()
+                };
+            }
+
             IntPtr pTbIcons = Marshal.AllocHGlobal(Marshal.SizeOf(tbIcons));
             Marshal.StructureToPtr(tbIcons, pTbIcons, false);
-            Win32.SendMessage(PluginBase.NppData._nppHandle, (uint)NppMsg.NPPM_ADDTOOLBARICON, PluginBase.FuncItems.Items[OpenCommandId]._cmdID, pTbIcons);
-            Marshal.FreeHGlobal(pTbIcons);
-
-            tbIcons = new toolbarIcons();
-            tbIcons.hToolbarBmp = tbSave.GetHbitmap();
-            pTbIcons = Marshal.AllocHGlobal(Marshal.SizeOf(tbIcons));
-            Marshal.StructureToPtr(tbIcons, pTbIcons, false);
-            Win32.SendMessage(PluginBase.NppData._nppHandle, (uint)NppMsg.NPPM_ADDTOOLBARICON, PluginBase.FuncItems.Items[SaveCommandId]._cmdID, pTbIcons);
+            Win32.SendMessage(PluginBase.NppData._nppHandle, (uint) nppMsg,
+                PluginBase.FuncItems.Items[commandId]._cmdID, pTbIcons);
             Marshal.FreeHGlobal(pTbIcons);
         }
 
@@ -109,7 +142,7 @@ namespace NppGist
 
         private static void OpenGistCommand()
         {
-            if (!string.IsNullOrEmpty(GitHubService.Token) || (new dlgAuthorization()).ShowDialog() == DialogResult.OK)
+            if (!string.IsNullOrEmpty(GitHubService.Token) || new dlgAuthorization().ShowDialog() == DialogResult.OK)
             {
                 var openGistForm = new dlgOpenGist();
                 openGistForm.ShowDialog();
@@ -118,7 +151,7 @@ namespace NppGist
 
         private static void SaveGistCommand()
         {
-            if (!string.IsNullOrEmpty(GitHubService.Token) || (new dlgAuthorization()).ShowDialog() == DialogResult.OK)
+            if (!string.IsNullOrEmpty(GitHubService.Token) || new dlgAuthorization().ShowDialog() == DialogResult.OK)
             {
                 var saveGistForm = new dlgSaveGist();
                 saveGistForm.ShowDialog();
