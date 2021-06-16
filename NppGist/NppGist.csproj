@@ -177,17 +177,11 @@
     <Compile Include="Forms\frmAbout.Designer.cs">
       <DependentUpon>frmAbout.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\dlgOpenGist.cs">
+    <Compile Include="Forms\frmManageGists.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\dlgOpenGist.Designer.cs">
-      <DependentUpon>dlgOpenGist.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\dlgSaveGist.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\dlgSaveGist.Designer.cs">
-      <DependentUpon>dlgSaveGist.cs</DependentUpon>
+    <Compile Include="Forms\frmManageGists.Designer.cs">
+      <DependentUpon>frmManageGists.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\GuiUtils.cs" />
     <Compile Include="Forms\Paginator.cs" />
@@ -218,11 +212,8 @@
     <EmbeddedResource Include="Forms\dlgFilename.resx">
       <DependentUpon>dlgFilename.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\dlgOpenGist.resx">
-      <DependentUpon>dlgOpenGist.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\dlgSaveGist.resx">
-      <DependentUpon>dlgSaveGist.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\frmManageGists.resx">
+      <DependentUpon>frmManageGists.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmAbout.resx">
       <DependentUpon>frmAbout.cs</DependentUpon>
@@ -246,12 +237,6 @@
     <None Include="Resources\hyperlink.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\download.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\upload.png" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="..\packages\ServiceStack.Text.5.9.2\lib\net45\ServiceStack.Text.dll">
       <Link>ServiceStack.Text.dll</Link>
     </EmbeddedResource>
@@ -267,6 +252,9 @@
     <EmbeddedResource Include="..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll">
       <Link>System.Runtime.CompilerServices.Unsafe.dll</Link>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)NppNetInf\src\DllExport\NppPlugin.DllExport.targets" />

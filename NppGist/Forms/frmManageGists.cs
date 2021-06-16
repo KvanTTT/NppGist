@@ -1,6 +1,7 @@
 ﻿using NppNetInf;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -11,13 +12,13 @@ using NppGist.JsonMapping;
 
 namespace NppGist.Forms
 {
-    public partial class dlgSaveGist : Form
+    public partial class frmManageGists : Form
     {
         private readonly System.Threading.Timer detectExtensionTimer;
         private bool closeDialog;
         private Paginator paginator;
 
-        public dlgSaveGist()
+        public frmManageGists()
         {
             InitializeComponent();
 
@@ -30,7 +31,7 @@ namespace NppGist.Forms
             Win32.SendMessage(PluginBase.NppData._nppHandle, (uint) NppMsg.NPPM_GETCURRENTLANGTYPE, 0, ref langType);
             var gistNppLang = Lists.GistNppLangs.FirstOrDefault(lang => lang.Value == langType);
             cmbLanguage.SelectedItem = gistNppLang.Key ?? Lists.GistLangs[0];
-            cbCloseDialog.Checked = Main.CloseSaveDialog;
+            cbCloseDialog.Checked = Main.CloseDialog;
 
             detectExtensionTimer =
                 new System.Threading.Timer(_ => GuiUtils.UpdateExtenstionResult(cmbLanguage, tbGistName), null, 0,
@@ -40,7 +41,7 @@ namespace NppGist.Forms
             toolTip.SetToolTip(btnUpdate, "Update Gists");
         }
 
-        private async void frmSaveGist_Load(object sender, EventArgs e)
+        private async void frmManageGists_Load(object sender, EventArgs e)
         {
             try
             {
@@ -99,10 +100,26 @@ namespace NppGist.Forms
             }
         }
 
+        private void frmManageGists_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.None && !closeDialog)
+                e.Cancel = true;
+        }
+
         private void tvGists_DoubleClick(object sender, EventArgs e)
         {
-            if (tvGists.SelectedNode != null)
-                btnSave_Click(sender, e);
+            var selectedNode = tvGists.SelectedNode;
+            if (selectedNode != null)
+            {
+                var parts = selectedNode.Name.Split(new[] {'/'}, 2);
+                if (paginator.Gists.TryGetValue(parts[0], out Gist gist))
+                {
+                    if (parts.Length == 1 || parts.Length > 1 && gist.Files.ContainsKey(parts[1]))
+                    {
+                        btnOpen_Click(sender, e);
+                    }
+                }
+            }
         }
 
         private async void btnSave_Click(object sender, EventArgs e)
@@ -129,9 +146,9 @@ namespace NppGist.Forms
                     else
                     {
                         // Updating existing gist
-                        var strs = tvGists.SelectedNode.Name.Split('/');
-                        var gist = paginator.Gists[strs[0]];
-                        var file = gist.Files[strs[1]];
+                        var parts = tvGists.SelectedNode.Name.Split('/');
+                        var gist = paginator.Gists[parts[0]];
+                        var file = gist.Files[parts[1]];
                         var gistName = GuiUtils.GetGistName(gist);
 
                         if (gist.Files.Count == 1)
@@ -308,6 +325,7 @@ namespace NppGist.Forms
                 if (tvGists.SelectedNode.Name == GuiUtils.AllGistsKey)
                 {
                     ToggleInputElementsEnable(true);
+                    btnOpen.Enabled = false;
                     btnDelete.Enabled = false;
                     btnRename.Enabled = false;
                     cbPublic.Enabled = true;
@@ -317,12 +335,13 @@ namespace NppGist.Forms
                 }
                 else
                 {
-                    var strs = tvGists.SelectedNode.Name.Split('/');
-                    var gist = paginator.Gists[strs[0]];
-                    var file = gist.Files[strs[1]];
+                    var parts = tvGists.SelectedNode.Name.Split('/');
+                    var gist = paginator.Gists[parts[0]];
+                    var file = gist.Files[parts[1]];
                     if (gist.Files.Count == 1 || tvGists.SelectedNode.Parent.Name != GuiUtils.AllGistsKey)
                     {
                         ToggleInputElementsEnable(true);
+                        btnOpen.Enabled = true;
                         if (gist.Files.Count == 1)
                             tbGistLink.Text = gist.HtmlUrl;
                         else if (gist.Files.Count > 1)
@@ -331,6 +350,7 @@ namespace NppGist.Forms
                     else
                     {
                         ToggleInputElementsEnable(false);
+                        btnOpen.Enabled = false;
                         tbGistLink.Text = gist.HtmlUrl;
                     }
 
@@ -338,8 +358,8 @@ namespace NppGist.Forms
                     cbPublic.Enabled = false;
                     cbPublic.Checked = gist.Public;
                     tbGistName.Text = file.Filename;
-                    tbCreateDate.Text = gist.CreatedAt.ToString();
-                    tbUpdateDate.Text = gist.UpdatedAt.ToString();
+                    tbCreateDate.Text = gist.CreatedAt.ToString(CultureInfo.CurrentCulture);
+                    tbUpdateDate.Text = gist.UpdatedAt.ToString(CultureInfo.CurrentCulture);
                     tbDescription.Text = gist.Description;
                 }
             }
@@ -347,7 +367,6 @@ namespace NppGist.Forms
             {
                 ToggleInputElementsEnable(false);
                 btnDelete.Enabled = false;
-                btnRename.Enabled = false;
                 cbPublic.Enabled = false;
             }
         }
@@ -390,12 +409,6 @@ namespace NppGist.Forms
             detectExtensionTimer.Change(200, Timeout.Infinite);
         }
 
-        private void frmSaveGist_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (e.CloseReason == CloseReason.None && !closeDialog)
-                e.Cancel = true;
-        }
-
         private void tbGistLink_Click(object sender, EventArgs e)
         {
             BeginInvoke((Action)delegate
@@ -406,9 +419,9 @@ namespace NppGist.Forms
 
         private void cbCloseDialog_CheckedChanged(object sender, EventArgs e)
         {
-            Main.CloseSaveDialog = cbCloseDialog.Checked;
+            Main.CloseDialog = cbCloseDialog.Checked;
             Win32.WritePrivateProfileString("Settings", "CloseSaveDialog",
-                Convert.ToInt32(Main.CloseSaveDialog).ToString(), Main.IniFileName);
+                Convert.ToInt32(Main.CloseDialog).ToString(), Main.IniFileName);
         }
 
         private void btnGoToGitHub_Click(object sender, EventArgs e)
@@ -419,5 +432,114 @@ namespace NppGist.Forms
         private async void btnPrevPage_Click(object sender, EventArgs e) => await paginator.UpdateGists(PageStatus.Prev);
 
         private async void btnNextPage_Click(object sender, EventArgs e) => await paginator.UpdateGists(PageStatus.Next);
+
+        private async void btnOpen_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                closeDialog = false;
+                if (tvGists.SelectedNode != null)
+                {
+                    var parts = tvGists.SelectedNode.Name.Split('/');
+                    var gist = paginator.Gists[parts[0]];
+                    var file = gist.Files[parts[1]];
+                    var fileContent = await Main.GitHubService.SendRequestAsync(file.RawUrl);
+
+                    if (!cbSaveToLocal.Checked)
+                    {
+                        string clipboardText = null;
+                        if (Clipboard.ContainsText())
+                        {
+                            clipboardText = Clipboard.GetText();
+                            Clipboard.SetText(" ");
+                        }
+
+                        Win32.SendMessage(PluginBase.NppData._nppHandle, (uint) NppMsg.NPPM_MENUCOMMAND, 0,
+                            NppMenuCmd.IDM_FILE_NEW);
+                        PluginBase.SetCurrentFileText(fileContent.Remove(50));
+                        PluginBase.AppendTextToCurrentFile(fileContent.Substring(50));
+                        if (file.Language != null && Lists.GistNppLangs.TryGetValue(file.Language, out var langType))
+                            Win32.SendMessage(PluginBase.NppData._nppHandle, (uint) NppMsg.NPPM_SETCURRENTLANGTYPE, 0,
+                                (int) langType);
+
+                        if (clipboardText != null)
+                            Clipboard.SetText(clipboardText);
+                        if (cbCloseDialog.Checked)
+                            closeDialog = true;
+                    }
+                    else
+                    {
+                        if (!Directory.Exists(PluginBase.UserDataDir))
+                            Directory.CreateDirectory(PluginBase.UserDataDir);
+                        string gistDirectory;
+                        if (gist.Files.Count > 1)
+                        {
+                            gistDirectory = Path.Combine(PluginBase.UserDataDir, gist.Id);
+                            if (!Directory.Exists(gistDirectory))
+                                Directory.CreateDirectory(gistDirectory);
+                        }
+                        else
+                            gistDirectory = PluginBase.UserDataDir;
+
+                        string filename;
+                        if (gist.Files.Count == 1 && file.Filename.StartsWith("gistfile"))
+                            filename = "gist:" + gist.Id;
+                        else
+                            filename = file.Filename;
+                        filename = Path.Combine(gistDirectory, Utils.GetSafeFilename(filename));
+
+                        var rewrite = true;
+                        bool notOpenFile = false;
+                        if (File.Exists(filename))
+                        {
+                            if (fileContent == File.ReadAllText(filename))
+                            {
+                                rewrite = false;
+                            }
+                            else if (MessageBox.Show($"Do you want to replace existing file \"{Path.GetFileName(filename)}\"?",
+                                         string.Empty, MessageBoxButtons.YesNo)
+                                == DialogResult.No)
+                            {
+                                var dialog = new SaveFileDialog
+                                {
+                                    FileName = Path.GetFileName(filename),
+                                    InitialDirectory = Path.GetFullPath(gistDirectory)
+                                };
+                                var extension = Path.GetExtension(filename);
+                                dialog.Filter = string.IsNullOrEmpty(extension)
+                                    ? "All files | *.*"
+                                    : string.Format("(*{0} files) | *{0}", extension);
+                                if (dialog.ShowDialog() == DialogResult.OK)
+                                    filename = dialog.FileName;
+                                else
+                                    notOpenFile = true;
+                            }
+                        }
+
+                        if (!notOpenFile)
+                        {
+                            if (rewrite)
+                                File.WriteAllText(filename, fileContent);
+                            Win32.SendMessage(PluginBase.NppData._nppHandle, (uint)NppMsg.NPPM_DOOPEN, 0, filename);
+                            if (cbCloseDialog.Checked)
+                                closeDialog = true;
+                        }
+                    }
+                }
+                if (sender is TreeView && closeDialog)
+                    Close();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Unable to load gist." + Environment.NewLine + "Error message: " + ex.Message);
+            }
+        }
+
+        private void cbSaveToLocal_CheckedChanged(object sender, EventArgs e)
+        {
+            Main.SaveLocally = cbSaveToLocal.Checked;
+            Win32.WritePrivateProfileString("Settings", "SaveToLocal", Convert.ToInt32(Main.SaveLocally).ToString(),
+                Main.IniFileName);
+        }
     }
 }

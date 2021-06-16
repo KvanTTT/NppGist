@@ -17,15 +17,12 @@ namespace NppGist
         internal static string IniFileName;
         internal static string Login;
         internal static bool SaveLocally;
-        internal static bool CloseSaveDialog = true;
-        internal static bool CloseOpenDialog = true;
+        internal static bool CloseDialog = true;
 
-        static Bitmap tbLoad = Properties.Resources.download;
-        static Bitmap tbSave = Properties.Resources.upload;
+        static Bitmap tbManage = Properties.Resources.icon;
         static int TokenCommandId = 0;
-        static int OpenCommandId = 1;
-        static int SaveCommandId = 2;
-        static int AboutCommandId = 3;
+        static int ManageCommandId = 1;
+        static int AboutCommandId = 2;
 
         public static GitHubService GitHubService { get; set; }
 
@@ -66,39 +63,21 @@ namespace NppGist
 
             GitHubService = new GitHubService(token);
             SaveLocally = Convert.ToBoolean(Win32.GetPrivateProfileInt("Settings", "SaveToLocal", 1, IniFileName));
-            CloseSaveDialog = Convert.ToBoolean(Win32.GetPrivateProfileInt("Settings", "CloseSaveDialog", 1, IniFileName));
-            CloseOpenDialog = Convert.ToBoolean(Win32.GetPrivateProfileInt("Settings", "CloseOpenDialog", 1, IniFileName));
+            CloseDialog = Convert.ToBoolean(Win32.GetPrivateProfileInt("Settings", "CloseOpenDialog", 1, IniFileName));
             GuiUtils.SecretGistColor = Color.FromArgb(Win32.GetPrivateProfileInt("Settings", "SecretGistBackgroundColor", GuiUtils.SecretGistColor.ToArgb(), IniFileName));
             GuiUtils.SecretGistForeColor = Color.FromArgb(Win32.GetPrivateProfileInt("Settings", "SecretGistForegroundColor", GuiUtils.SecretGistForeColor.ToArgb(), IniFileName));
             Paginator.GistsPerPage =
                 Convert.ToInt32(Win32.GetPrivateProfileInt("Settings", "GistsPerPage", Paginator.GistsPerPage, IniFileName));
 
             PluginBase.SetCommand(TokenCommandId, "Access Token", EnterAccessTokenCommand);
-            PluginBase.SetCommand(OpenCommandId, "Open Gist", OpenGistCommand, new ShortcutKey(false, false, false, Keys.None));
-            PluginBase.SetCommand(SaveCommandId, "Save Gist", SaveGistCommand, new ShortcutKey(false, false, false, Keys.None));
+            PluginBase.SetCommand(ManageCommandId, "Manage Gists", ManageGistsCommand, new ShortcutKey(false, false, false, Keys.None));
             PluginBase.SetCommand(AboutCommandId, "About", AboutCommand);
         }
 
         public override void SetToolBarIcon()
         {
-            SetToolBarIcon(true);
-            SetToolBarIcon(false);
-        }
-
-        private static void SetToolBarIcon(bool openIcon)
-        {
-            int commandId;
-            Bitmap bitmap;
-            if (openIcon)
-            {
-                bitmap = tbLoad;
-                commandId = OpenCommandId;
-            }
-            else
-            {
-                bitmap = tbSave;
-                commandId = SaveCommandId;
-            }
+            var bitmap = tbManage;
+            var commandId = ManageCommandId;
 
             NppMsg nppMsg;
             object tbIcons;
@@ -140,21 +119,12 @@ namespace NppGist
             authForm.ShowDialog();
         }
 
-        private static void OpenGistCommand()
+        private static void ManageGistsCommand()
         {
             if (!string.IsNullOrEmpty(GitHubService.Token) || new dlgAuthorization().ShowDialog() == DialogResult.OK)
             {
-                var openGistForm = new dlgOpenGist();
-                openGistForm.ShowDialog();
-            }
-        }
-
-        private static void SaveGistCommand()
-        {
-            if (!string.IsNullOrEmpty(GitHubService.Token) || new dlgAuthorization().ShowDialog() == DialogResult.OK)
-            {
-                var saveGistForm = new dlgSaveGist();
-                saveGistForm.ShowDialog();
+                var manageGistsForm = new frmManageGists();
+                manageGistsForm.ShowDialog();
             }
         }
 
