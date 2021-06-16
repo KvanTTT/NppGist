@@ -19,7 +19,6 @@ namespace NppGist
         internal static bool SaveLocally;
         internal static bool CloseDialog = true;
 
-        static Bitmap tbManage = Properties.Resources.icon;
         static int TokenCommandId = 0;
         static int ManageCommandId = 1;
         static int AboutCommandId = 2;
@@ -76,19 +75,18 @@ namespace NppGist
 
         public override void SetToolBarIcon()
         {
-            var bitmap = tbManage;
-            var commandId = ManageCommandId;
-
             NppMsg nppMsg;
             object tbIcons;
+
+            var bmp = Properties.Resources.icon.GetHbitmap();
             if (PluginBase.NppVersion.Major >= 8)
             {
                 nppMsg = NppMsg.NPPM_ADDTOOLBARICON_FORDARKMODE;
                 tbIcons = new toolbarIconsWithDarkMode
                 {
-                    hToolbarBmp = bitmap.GetHbitmap(),
-                    hToolbarIcon = bitmap.GetHicon(),
-                    hToolbarIconDarkMode = bitmap.GetHicon()
+                    hToolbarBmp = bmp,
+                    hToolbarIcon = Properties.Resources.light.GetHicon(),
+                    hToolbarIconDarkMode = Properties.Resources.dark.GetHicon(),
                 };
             }
             else
@@ -96,15 +94,15 @@ namespace NppGist
                 nppMsg = NppMsg.NPPM_ADDTOOLBARICON_DEPRECATED;
                 tbIcons = new toolbarIcons
                 {
-                    hToolbarBmp = bitmap.GetHbitmap(),
-                    hToolbarIcon = bitmap.GetHicon()
+                    hToolbarBmp = bmp,
+                    hToolbarIcon = Properties.Resources.icon.GetHicon()
                 };
             }
 
             IntPtr pTbIcons = Marshal.AllocHGlobal(Marshal.SizeOf(tbIcons));
             Marshal.StructureToPtr(tbIcons, pTbIcons, false);
             Win32.SendMessage(PluginBase.NppData._nppHandle, (uint) nppMsg,
-                PluginBase.FuncItems.Items[commandId]._cmdID, pTbIcons);
+                PluginBase.FuncItems.Items[ManageCommandId]._cmdID, pTbIcons);
             Marshal.FreeHGlobal(pTbIcons);
         }
 
